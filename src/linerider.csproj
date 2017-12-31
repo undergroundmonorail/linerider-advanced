@@ -194,6 +194,12 @@
     <EmbeddedResource Include="Resources\brokensled.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\open_sans_0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\open_sans.fnt" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="app.manifest" />
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -211,10 +217,6 @@
     <ProjectReference Include="..\lib\Gwen.Renderer.OpenTK\Gwen.Renderer.OpenTK.csproj">
       <Project>{41650c82-d630-4e5c-845a-f1513c8fdc99}</Project>
       <Name>Gwen.Renderer.OpenTK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\QuickFont\QuickFont.csproj">
-      <Project>{BBECE6FC-EF63-40F8-A734-A500D1DFC1AF}</Project>
-      <Name>QuickFont</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

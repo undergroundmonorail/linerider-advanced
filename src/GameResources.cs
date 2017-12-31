@@ -427,5 +427,19 @@ namespace linerider
                 return GetString("DefaultColors.xml");
             }
         }
+        internal static string opensans
+        {
+            get
+            {
+                return GetString("open_sans.fnt");
+            }
+        }
+        internal static System.Drawing.Bitmap opensans_png
+        {
+            get
+            {
+                return GetBitmap("open_sans_0.png");
+            }
+        }
     }
 }
