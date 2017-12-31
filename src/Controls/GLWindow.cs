@@ -201,7 +201,6 @@ namespace linerider
         {
             if (Canvas.NeedsRedraw || (Track.Animating && (Track.SimulationNeedsDraw || Settings.SmoothPlayback)) || Loading || Track.RequiresUpdate)
             {
-                Console.WriteLine(Track.Playing);
                 Track.SimulationNeedsDraw = false;
 
                 BeginOrtho();
