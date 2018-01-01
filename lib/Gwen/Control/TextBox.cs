@@ -149,6 +149,13 @@ namespace Gwen.Controls
             string str = Text;
             return str.Substring(start, end - start);
         }
+        public override void SetText(string str, bool doEvents = true)
+        {
+			base.SetText(str, doEvents);
+            //bugfix crash when cursorpos > text length
+            m_CursorPos = Math.Min(m_CursorPos, Text.Length);
+            m_CursorEnd = Math.Min(m_CursorEnd, Text.Length);
+        }
 
         #endregion Methods
 
