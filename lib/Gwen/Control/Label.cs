@@ -9,66 +9,17 @@ namespace Gwen.Controls
     /// </summary>
     public class Label : ControlBase
     {
-        #region Events
-
-        public override event ControlBase.GwenEventHandler<ClickedEventArgs> Clicked
+        public override bool MouseInputEnabled
         {
-            add
+            get
             {
-                base.Clicked += value;
-                MouseInputEnabled = ClickEventAssigned;
+                return base.MouseInputEnabled || ClickEventAssigned;
             }
-            remove
+            set
             {
-                base.Clicked -= value;
-                MouseInputEnabled = ClickEventAssigned;
+                base.MouseInputEnabled = value;
             }
         }
-
-        public override event ControlBase.GwenEventHandler<ClickedEventArgs> DoubleClicked
-        {
-            add
-            {
-                base.DoubleClicked += value;
-                MouseInputEnabled = ClickEventAssigned;
-            }
-            remove
-            {
-                base.DoubleClicked -= value;
-                MouseInputEnabled = ClickEventAssigned;
-            }
-        }
-
-        public override event ControlBase.GwenEventHandler<ClickedEventArgs> DoubleRightClicked
-        {
-            add
-            {
-                base.DoubleRightClicked += value;
-                MouseInputEnabled = ClickEventAssigned;
-            }
-            remove
-            {
-                base.DoubleRightClicked -= value;
-                MouseInputEnabled = ClickEventAssigned;
-            }
-        }
-
-        public override event ControlBase.GwenEventHandler<ClickedEventArgs> RightClicked
-        {
-            add
-            {
-                base.RightClicked += value;
-                MouseInputEnabled = ClickEventAssigned;
-            }
-            remove
-            {
-                base.RightClicked -= value;
-                MouseInputEnabled = ClickEventAssigned;
-            }
-        }
-
-        #endregion Events
-
         #region Properties
 
         /// <summary>
@@ -107,11 +58,6 @@ namespace Gwen.Controls
         public Color TextColor { get { return m_Text.TextColor; } set { m_Text.TextColor = value; } }
 
         /// <summary>
-        /// Override text color (used by tooltips).
-        /// </summary>
-        public Color TextColorOverride { get { return m_Text.TextColorOverride; } set { m_Text.TextColorOverride = value; } }
-
-        /// <summary>
         /// Height of the text (in pixels).
         /// </summary>
         public int TextHeight { get { return m_Text.Height; } }
@@ -121,10 +67,15 @@ namespace Gwen.Controls
         /// </summary>
         public int TextLength { get { return m_Text.Length; } }
 
-        /// <summary>
-        /// Text override - used to display different string.
-        /// </summary>
-        public string TextOverride { get { return m_Text.TextOverride; } set { m_Text.TextOverride = value; } }
+		/// <summary>
+		/// Text color override - used by tooltips.
+		/// </summary>
+        public Color TextColorOverride { get; set; }
+
+		/// <summary>
+		/// Text override - used to display different string.
+		/// </summary>
+        public string TextOverride { get; set; }
 
         /// <summary>
         /// Text padding.
@@ -152,14 +103,13 @@ namespace Gwen.Controls
         public Label(ControlBase parent) : base(parent)
         {
             m_Text = new Text(this);
-            //m_Text.Font = Skin.DefaultFont;
-
-            MouseInputEnabled = false;
-            SetSize(100, 10);
+            SetSize(100, m_Text.Height);
             Alignment = Pos.Left | Pos.Top;
 
-            m_AutoSizeToContents = true;
-        }
+			m_AutoSizeToContents = true;
+			base.MouseInputEnabled = false;
+            TextColorOverride = Color.FromArgb(0, 255, 255, 255);// A==0, override disabled
+		}
 
         #endregion Constructors
 

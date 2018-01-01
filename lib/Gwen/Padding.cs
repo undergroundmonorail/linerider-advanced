@@ -13,12 +13,12 @@ namespace Gwen
         public readonly int Right;
 
         // common values
-        public static Padding Zero = new Padding(0, 0, 0, 0);
-        public static Padding One = new Padding(1, 1, 1, 1);
-        public static Padding Two = new Padding(2, 2, 2, 2);
-        public static Padding Three = new Padding(3, 3, 3, 3);
-        public static Padding Four = new Padding(4, 4, 4, 4);
-        public static Padding Five = new Padding(5, 5, 5, 5);
+        public static readonly Padding Zero = new Padding(0, 0, 0, 0);
+        public static readonly Padding One = new Padding(1, 1, 1, 1);
+        public static readonly Padding Two = new Padding(2, 2, 2, 2);
+        public static readonly Padding Three = new Padding(3, 3, 3, 3);
+        public static readonly Padding Four = new Padding(4, 4, 4, 4);
+        public static readonly Padding Five = new Padding(5, 5, 5, 5);
 
         public Padding(int left, int top, int right, int bottom)
         {

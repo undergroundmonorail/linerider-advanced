@@ -88,7 +88,7 @@ namespace Gwen.Controls
         /// <summary>
         /// Logical list of children. If InnerPanel is not null, returns InnerPanel's children.
         /// </summary>
-        public List<ControlBase> Children
+        public virtual List<ControlBase> Children
         {
             get
             {
@@ -183,7 +183,7 @@ namespace Gwen.Controls
         /// <summary>
         /// Current padding - inner spacing.
         /// </summary>
-        public Padding Padding
+        public virtual Padding Padding
         {
             get { return m_Padding; }
             set
@@ -200,7 +200,7 @@ namespace Gwen.Controls
         /// <summary>
         /// Current margin - outer spacing.
         /// </summary>
-        public Margin Margin
+        public virtual Margin Margin
         {
             get { return m_Margin; }
             set
@@ -266,7 +266,7 @@ namespace Gwen.Controls
         /// <summary>
         /// Determines whether the control receives mouse input events.
         /// </summary>
-        public bool MouseInputEnabled { get { return m_MouseInputEnabled; } set { m_MouseInputEnabled = value; } }
+        public virtual bool MouseInputEnabled { get { return m_MouseInputEnabled; } set { m_MouseInputEnabled = value; } }
 
         /// <summary>
         /// Determines whether the control receives keyboard input events.
@@ -541,42 +541,6 @@ namespace Gwen.Controls
         public virtual void SetToolTipText(string text)
         {
             Tooltip = text;
-        }
-
-        /// <summary>
-        /// Invalidates the control's children (relayout/repaint).
-        /// </summary>
-        /// <param name="recursive">Determines whether the operation should be carried recursively.</param>
-        protected virtual void InvalidateChildren(bool recursive = false)
-        {
-            foreach (ControlBase child in m_Children)
-            {
-                child.Invalidate();
-                if (recursive)
-                    child.InvalidateChildren(true);
-            }
-
-            if (m_InnerPanel != null)
-            {
-                foreach (ControlBase child in m_InnerPanel.m_Children)
-                {
-                    child.Invalidate();
-                    if (recursive)
-                        child.InvalidateChildren(true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Invalidates the control.
-        /// </summary>
-        /// <remarks>
-        /// Causes layout, repaint, invalidates cached texture.
-        /// </remarks>
-        public virtual void Invalidate()
-        {
-            m_NeedsLayout = true;
-            m_CacheTextureDirty = true;
         }
 
         /// <summary>
@@ -947,195 +911,6 @@ namespace Gwen.Controls
         {
         }
 
-        /// <summary>
-        /// Renders the control using specified skin.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected virtual void Render(Skin.SkinBase skin)
-        {
-        }
-
-        /// <summary>
-        /// Renders the control to a cache using specified skin.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        /// <param name="master">Root parent.</param>
-        protected virtual void DoCacheRender(Skin.SkinBase skin, ControlBase master)
-        {
-            Renderer.RendererBase render = skin.Renderer;
-            Renderer.ICacheToTexture cache = render.CTT;
-
-            if (cache == null)
-                return;
-
-            Point oldRenderOffset = render.RenderOffset;
-            Rectangle oldRegion = render.ClipRegion;
-
-            if (this != master)
-            {
-                render.AddRenderOffset(Bounds);
-                render.AddClipRegion(Bounds);
-            }
-            else
-            {
-                render.RenderOffset = Point.Empty;
-                render.ClipRegion = new Rectangle(0, 0, Width, Height);
-            }
-
-            if (m_CacheTextureDirty && render.ClipRegionVisible)
-            {
-                render.StartClip();
-
-                if (ShouldCacheToTexture)
-                    cache.SetupCacheTexture(this);
-
-                //Render myself first
-                //var old = render.ClipRegion;
-                //render.ClipRegion = Bounds;
-                //var old = render.RenderOffset;
-                //render.RenderOffset = new Point(Bounds.X, Bounds.Y);
-                Render(skin);
-                //render.RenderOffset = old;
-                //render.ClipRegion = old;
-
-                if (m_Children.Count > 0)
-                {
-                    //Now render my kids
-                    foreach (ControlBase child in m_Children)
-                    {
-                        if (child.IsHidden)
-                            continue;
-                        child.DoCacheRender(skin, master);
-                    }
-                }
-
-                if (ShouldCacheToTexture)
-                {
-                    cache.FinishCacheTexture(this);
-                    m_CacheTextureDirty = false;
-                }
-            }
-
-            render.ClipRegion = oldRegion;
-            render.StartClip();
-            render.RenderOffset = oldRenderOffset;
-
-            if (ShouldCacheToTexture)
-                cache.DrawCachedControlTexture(this);
-        }
-
-        /// <summary>
-        /// Rendering logic implementation.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        internal virtual void DoRender(Skin.SkinBase skin)
-        {
-            // If this control has a different skin,
-            // then so does its children.
-            if (m_Skin != null)
-                skin = m_Skin;
-
-            // Do think
-            Think();
-
-            Renderer.RendererBase render = skin.Renderer;
-
-            if (render.CTT != null && ShouldCacheToTexture)
-            {
-                DoCacheRender(skin, this);
-                return;
-            }
-
-            RenderRecursive(skin, Bounds);
-
-            if (DrawDebugOutlines)
-                skin.DrawDebugOutlines(this);
-        }
-
-        /// <summary>
-        /// Recursive rendering logic.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        /// <param name="clipRect">Clipping rectangle.</param>
-        protected virtual void RenderRecursive(Skin.SkinBase skin, Rectangle clipRect)
-        {
-            Renderer.RendererBase render = skin.Renderer;
-            Point oldRenderOffset = render.RenderOffset;
-
-            render.AddRenderOffset(clipRect);
-
-            RenderUnder(skin);
-
-            Rectangle oldRegion = render.ClipRegion;
-
-            if (ShouldClip)
-            {
-                render.AddClipRegion(clipRect);
-
-                if (!render.ClipRegionVisible)
-                {
-                    render.RenderOffset = oldRenderOffset;
-                    render.ClipRegion = oldRegion;
-                    return;
-                }
-
-                render.StartClip();
-            }
-
-            //Render myself first
-            Render(skin);
-
-            if (m_Children.Count > 0)
-            {
-                //Now render my kids
-                foreach (ControlBase child in m_Children)
-                {
-                    if (child.IsHidden)
-                        continue;
-                    child.DoRender(skin);
-                }
-            }
-
-            render.ClipRegion = oldRegion;
-            render.StartClip();
-            RenderOver(skin);
-
-            RenderFocus(skin);
-
-            render.RenderOffset = oldRenderOffset;
-        }
-
-        /// <summary>
-        /// Sets the control's skin.
-        /// </summary>
-        /// <param name="skin">New skin.</param>
-        /// <param name="doChildren">Deterines whether to change children skin.</param>
-        public virtual void SetSkin(Skin.SkinBase skin, bool doChildren = false)
-        {
-            if (m_Skin == skin)
-                return;
-            m_Skin = skin;
-            Invalidate();
-            Redraw();
-            OnSkinChanged(skin);
-
-            if (doChildren)
-            {
-                foreach (ControlBase child in m_Children)
-                {
-                    child.SetSkin(skin, true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Handler invoked when control's skin changes.
-        /// </summary>
-        /// <param name="newSkin">New skin.</param>
-        protected virtual void OnSkinChanged(Skin.SkinBase newSkin)
-        {
-        }
-
 
         /// <summary>
         /// Gets a child by its coordinates.
@@ -1449,18 +1224,6 @@ namespace Gwen.Controls
         protected virtual void PostLayout(Skin.SkinBase skin)
         {
         }
-
-        /// <summary>
-        /// Re-renders the control, invalidates cached texture.
-        /// </summary>
-        public virtual void Redraw()
-        {
-            UpdateColors();
-            m_CacheTextureDirty = true;
-            if (m_Parent != null)
-                m_Parent.Redraw();
-        }
-
         /// <summary>
         /// Updates control colors.
         /// </summary>

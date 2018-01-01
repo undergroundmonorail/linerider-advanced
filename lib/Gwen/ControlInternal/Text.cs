@@ -58,28 +58,48 @@ namespace Gwen.ControlInternal
         /// </summary>
         public int Length { get { return String.Length; } }
 
-        /// <summary>
-        /// Text color override - used by tooltips.
-        /// </summary>
-        public Color TextColorOverride { get; set; }
+        public override Padding Padding
+        {
+            get
+            {
+                return Padding.Zero;
+            }
+            set
+            {
+                if (value != Padding.Zero)
+                {
+                    throw new Exception("Attempt to change Padding of internal text control");
+                }
+            }
+        }
+		public override Margin Margin
+        {
+            get
+            {
+                return Margin.Zero;
+            }
+            set
+            {
+                if (value != Margin.Zero)
+				{
+					throw new Exception("Attempt to change Margin of internal text control");
+                }
+            }
+        }
 
-        /// <summary>
-        /// Text override - used to display different string.
-        /// </summary>
-        public string TextOverride { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Text"/> class.
-        /// </summary>
-        /// <param name="parent">Parent control.</param>
-        public Text(Controls.ControlBase parent)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Text"/> class.
+		/// </summary>
+		/// <param name="parent">Parent control.</param>
+		public Text(Controls.ControlBase parent)
             : base(parent)
         {
             m_Font = Skin.DefaultFont;
+
             m_String = String.Empty;
             TextColor = Skin.Colors.Label.Default;
             MouseInputEnabled = false;
-            TextColorOverride = Color.FromArgb(0, 255, 255, 255); // A==0, override disabled
+            SizeToContents();
         }
 
         /// <summary>
@@ -90,12 +110,9 @@ namespace Gwen.ControlInternal
         {
             if (Length == 0 || Font == null) return;
 
-            if (TextColorOverride.A == 0)
-                skin.Renderer.DrawColor = TextColor;
-            else
-                skin.Renderer.DrawColor = TextColorOverride;
+            skin.Renderer.DrawColor = TextColor;
 
-            skin.Renderer.RenderText(Font, Point.Empty, TextOverride ?? String);
+            skin.Renderer.RenderText(Font, Point.Empty, String);
 
 #if DEBUG_TEXT_MEASURE
             {
@@ -153,7 +170,7 @@ namespace Gwen.ControlInternal
 
             if (Length > 0)
             {
-                p = Skin.Renderer.MeasureText(Font, TextOverride ?? String);
+                p = Skin.Renderer.MeasureText(Font, String);
             }
 
             if (p.X == Width && p.Y == Height)
@@ -176,7 +193,7 @@ namespace Gwen.ControlInternal
                 return new Point(0, 0);
             }
 
-			string sub = (TextOverride ?? String).Substring(0, index);
+			string sub = String.Substring(0, index);
 			Point p = Skin.Renderer.MeasureText(Font, sub);
 
 			//if(p.Y >= Font.Size)

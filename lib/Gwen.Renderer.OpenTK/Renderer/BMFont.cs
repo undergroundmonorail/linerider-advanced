@@ -282,8 +282,6 @@ namespace Gwen.Renderer
                 }
                 retwidth = Math.Max(retwidth, x - posx);//in case of newline
             }
-            if (text.Length == 0)
-            retheight = 0;
             size = new Size() { Width = retwidth, Height = retheight };
             return ret;
         }
