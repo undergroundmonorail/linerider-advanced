@@ -209,10 +209,7 @@ namespace Gwen.Controls
             base.Layout(skin);
             if (m_Image != null)
             {
-                Align.CenterVertically(m_Image);
-
-                if (m_CenterImage)
-                    Align.CenterHorizontally(m_Image);
+                m_Image.Position(m_CenterImage ? Pos.Center : Pos.CenterV);
             }
         }
 

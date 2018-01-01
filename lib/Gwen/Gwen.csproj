@@ -74,7 +74,6 @@
     <Compile Include="ControlInternal\PropertyTreeNode.cs" />
     <Compile Include="Control\Property\PropertyBase.cs" />
     <Compile Include="Control\Property\Check.cs" />
-    <Compile Include="Control\Property\Color.cs" />
     <Compile Include="Control\Property\Text.cs" />
     <Compile Include="Control\ResizableControl.cs" />
     <Compile Include="Control\RichLabel.cs" />
@@ -92,12 +91,10 @@
     <Compile Include="Control\Button.cs" />
     <Compile Include="Control\Canvas.cs" />
     <Compile Include="Control\CheckBox.cs" />
-    <Compile Include="Control\ColorLerpBox.cs" />
     <Compile Include="Control\ColorSlider.cs" />
     <Compile Include="Control\CrossSplitter.cs" />
     <Compile Include="Control\GroupBox.cs" />
     <Compile Include="Control\HorizontalSlider.cs" />
-    <Compile Include="Control\HSVColorPicker.cs" />
     <Compile Include="Control\IColorPicker.cs" />
     <Compile Include="Control\LabeledCheckBox.cs" />
     <Compile Include="Control\ComboBox.cs" />
@@ -153,10 +150,15 @@
     <Compile Include="Renderer\ICacheToTexture.cs" />
     <Compile Include="Skin\SkinBase.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Control\ControlBase\ControlBase.Layout.cs" />
+    <Compile Include="Control\ControlBase\ControlBase.Input.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Content Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Control\ControlBase\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

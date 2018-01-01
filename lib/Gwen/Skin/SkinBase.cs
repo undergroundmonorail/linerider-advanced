@@ -8,6 +8,7 @@ namespace Gwen.Skin
     /// </summary>
     public class SkinBase : IDisposable
     {
+        public static SkinBase DefaultSkin = null;
         protected Font m_DefaultFont;
         protected readonly Renderer.RendererBase m_Renderer;
 
@@ -40,6 +41,8 @@ namespace Gwen.Skin
         /// <param name="renderer">Renderer to use.</param>
         protected SkinBase(Renderer.RendererBase renderer)
         {
+            if (DefaultSkin == null)
+                DefaultSkin = this;
             m_DefaultFont = new Font(renderer);
             m_Renderer = renderer;
         }
