@@ -205,6 +205,7 @@ namespace Gwen.Controls
         {
             m_NeedsLayout = true;
             m_CacheTextureDirty = true;
+			GetCanvas().NeedsRedraw = true;
         }
 		/// <summary>
 		/// Invalidates the control's children (relayout/repaint).
@@ -244,10 +245,8 @@ namespace Gwen.Controls
 		/// </summary>
 		public virtual void Redraw()
 		{
-            //todo properly implement control parenting for canvas access
 			m_CacheTextureDirty = true;
-			if (m_Parent != null)
-				m_Parent.Redraw();
+            GetCanvas().NeedsRedraw = true;
 		}
 
 		/// <summary>
