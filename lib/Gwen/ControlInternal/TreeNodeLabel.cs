@@ -8,6 +8,28 @@ namespace Gwen.ControlInternal
     /// </summary>
     public class TreeNodeLabel : Button
     {
+        protected override System.Drawing.Color CurrentColor
+        {
+            get
+			{
+				if (IsDisabled)
+				{
+                    return Skin.Colors.Button.Disabled;
+				}
+
+				if (IsDepressed || ToggleState)
+				{
+                    return Skin.Colors.Tree.Selected;
+				}
+
+				if (IsHovered)
+				{
+                    return Skin.Colors.Tree.Hover;
+				}
+
+                return Skin.Colors.Tree.Normal;
+            }
+        }
         /// <summary>
         /// Initializes a new instance of the <see cref="TreeNodeLabel"/> class.
         /// </summary>
@@ -19,32 +41,6 @@ namespace Gwen.ControlInternal
             ShouldDrawBackground = false;
             Height = 16;
             TextPadding = new Padding(3, 0, 3, 0);
-        }
-
-        /// <summary>
-        /// Updates control colors.
-        /// </summary>
-        public override void UpdateColors()
-        {
-            if (IsDisabled)
-            {
-                TextColor = Skin.Colors.Button.Disabled;
-                return;
-            }
-
-            if (IsDepressed || ToggleState)
-            {
-                TextColor = Skin.Colors.Tree.Selected;
-                return;
-            }
-
-            if (IsHovered)
-            {
-                TextColor = Skin.Colors.Tree.Hover;
-                return;
-            }
-
-            TextColor = Skin.Colors.Tree.Normal;
         }
     }
 }

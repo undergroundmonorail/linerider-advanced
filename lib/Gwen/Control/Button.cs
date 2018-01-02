@@ -40,7 +40,28 @@ namespace Gwen.Controls
         #endregion Events
 
         #region Properties
+        protected override Color CurrentColor
+        {
+            get
+			{
+				if (IsDisabled)
+				{
+					return Skin.Colors.Button.Disabled;
+				}
 
+				if (IsDepressed || ToggleState)
+				{
+					return Skin.Colors.Button.Down;
+				}
+
+				if (IsHovered)
+				{
+					return Skin.Colors.Button.Hover;
+				}
+
+				return Skin.Colors.Button.Normal;
+            }
+        }
         /// <summary>
         /// Indicates whether the button is depressed.
         /// </summary>
@@ -172,32 +193,6 @@ namespace Gwen.Controls
         public virtual void Toggle()
         {
             ToggleState = !ToggleState;
-        }
-
-        /// <summary>
-        /// Updates control colors.
-        /// </summary>
-        public override void UpdateColors()
-        {
-            if (IsDisabled)
-            {
-                TextColor = Skin.Colors.Button.Disabled;
-                return;
-            }
-
-            if (IsDepressed || ToggleState)
-            {
-                TextColor = Skin.Colors.Button.Down;
-                return;
-            }
-
-            if (IsHovered)
-            {
-                TextColor = Skin.Colors.Button.Hover;
-                return;
-            }
-
-            TextColor = Skin.Colors.Button.Normal;
         }
 
         /// <summary>

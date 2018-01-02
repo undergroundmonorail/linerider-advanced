@@ -155,49 +155,43 @@ namespace Gwen.Controls
             return true;
         }
 
-        /// <summary>
-        /// Updates control colors.
-        /// </summary>
-        public override void UpdateColors()
+        protected override System.Drawing.Color CurrentColor
         {
-            if (IsActive)
-            {
-                if (IsDisabled)
-                {
-                    TextColor = Skin.Colors.Tab.Active.Disabled;
-                    return;
-                }
-                if (IsDepressed)
-                {
-                    TextColor = Skin.Colors.Tab.Active.Down;
-                    return;
-                }
-                if (IsHovered)
-                {
-                    TextColor = Skin.Colors.Tab.Active.Hover;
-                    return;
-                }
+            get
+			{
+				if (IsActive)
+				{
+					if (IsDisabled)
+					{
+						return Skin.Colors.Tab.Active.Disabled;
+					}
+					if (IsDepressed)
+					{
+						return Skin.Colors.Tab.Active.Down;
+					}
+					if (IsHovered)
+					{
+						return Skin.Colors.Tab.Active.Hover;
+					}
 
-                TextColor = Skin.Colors.Tab.Active.Normal;
-            }
+					return Skin.Colors.Tab.Active.Normal;
+				}
 
-            if (IsDisabled)
-            {
-                TextColor = Skin.Colors.Tab.Inactive.Disabled;
-                return;
-            }
-            if (IsDepressed)
-            {
-                TextColor = Skin.Colors.Tab.Inactive.Down;
-                return;
-            }
-            if (IsHovered)
-            {
-                TextColor = Skin.Colors.Tab.Inactive.Hover;
-                return;
-            }
+				if (IsDisabled)
+				{
+					return Skin.Colors.Tab.Inactive.Disabled;
+				}
+				if (IsDepressed)
+				{
+					return Skin.Colors.Tab.Inactive.Down;
+				}
+				if (IsHovered)
+				{
+					return Skin.Colors.Tab.Inactive.Hover;
+				}
 
-            TextColor = Skin.Colors.Tab.Inactive.Normal;
+				return Skin.Colors.Tab.Inactive.Normal;
+            }
         }
     }
 }

@@ -42,11 +42,27 @@ namespace Gwen.ControlInternal
                 SizeToContents();
             }
         }
+        private Color m_TextColor;
 
         /// <summary>
         /// Text color.
         /// </summary>
-        public Color TextColor { get; set; }
+        public Color TextColor
+        {
+            get
+            {
+                return m_TextColor;
+            }
+
+            set
+            {
+                if (value != m_TextColor)
+                {
+                    m_TextColor = value;
+                    Redraw();
+                }
+            }
+        }
 
         /// <summary>
         /// Determines whether the control should be automatically resized to fit the text.

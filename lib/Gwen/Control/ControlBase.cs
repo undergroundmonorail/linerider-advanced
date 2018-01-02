@@ -1224,15 +1224,6 @@ namespace Gwen.Controls
         protected virtual void PostLayout(Skin.SkinBase skin)
         {
         }
-        /// <summary>
-        /// Updates control colors.
-        /// </summary>
-        /// <remarks>
-        /// Used in composite controls like lists to differentiate row colors etc.
-        /// </remarks>
-        public virtual void UpdateColors()
-        {
-        }
 
         /// <summary>
         /// Invalidates control's parent.

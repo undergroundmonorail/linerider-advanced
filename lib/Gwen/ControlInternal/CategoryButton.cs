@@ -10,6 +10,34 @@ namespace Gwen.ControlInternal
     {
         internal bool m_Alt; // for alternate coloring
 
+		protected override System.Drawing.Color CurrentColor
+		{
+			get
+			{
+				if (m_Alt)
+				{
+					if (IsDepressed || ToggleState)
+					{
+						return Skin.Colors.Category.LineAlt.Text_Selected;
+					}
+					if (IsHovered)
+					{
+						return Skin.Colors.Category.LineAlt.Text_Hover;
+					}
+					return Skin.Colors.Category.LineAlt.Text;
+				}
+
+				if (IsDepressed || ToggleState)
+				{
+					return Skin.Colors.Category.Line.Text_Selected;
+				}
+				if (IsHovered)
+				{
+					return Skin.Colors.Category.Line.Text_Hover;
+				}
+				return Skin.Colors.Category.Line.Text;
+			}
+		}
         /// <summary>
         /// Initializes a new instance of the <see cref="CategoryButton"/> class.
         /// </summary>
@@ -48,40 +76,6 @@ namespace Gwen.ControlInternal
             }
 
             skin.Renderer.DrawFilledRect(RenderBounds);
-        }
-
-        /// <summary>
-        /// Updates control colors.
-        /// </summary>
-        public override void UpdateColors()
-        {
-            if (m_Alt)
-            {
-                if (IsDepressed || ToggleState)
-                {
-                    TextColor = Skin.Colors.Category.LineAlt.Text_Selected;
-                    return;
-                }
-                if (IsHovered)
-                {
-                    TextColor = Skin.Colors.Category.LineAlt.Text_Hover;
-                    return;
-                }
-                TextColor = Skin.Colors.Category.LineAlt.Text;
-                return;
-            }
-
-            if (IsDepressed || ToggleState)
-            {
-                TextColor = Skin.Colors.Category.Line.Text_Selected;
-                return;
-            }
-            if (IsHovered)
-            {
-                TextColor = Skin.Colors.Category.Line.Text_Hover;
-                return;
-            }
-            TextColor = Skin.Colors.Category.Line.Text;
         }
     }
 }

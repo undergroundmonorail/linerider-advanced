@@ -311,7 +311,7 @@ namespace Gwen.Controls
         /// </summary>
         protected override void OnLostKeyboardFocus()
         {
-            UpdateColors();
+            Redraw();
         }
 
         /// <summary>

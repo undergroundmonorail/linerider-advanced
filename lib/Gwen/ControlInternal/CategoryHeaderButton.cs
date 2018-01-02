@@ -8,6 +8,16 @@ namespace Gwen.ControlInternal
     /// </summary>
     public class CategoryHeaderButton : Button
     {
+        protected override System.Drawing.Color CurrentColor
+        {
+            get
+			{
+				if (IsDepressed || ToggleState)
+                    return Skin.Colors.Category.Header_Closed;
+				else
+					return Skin.Colors.Category.Header;
+            }
+        }
         /// <summary>
         /// Initializes a new instance of the <see cref="CategoryHeaderButton"/> class.
         /// </summary>
@@ -19,17 +29,6 @@ namespace Gwen.ControlInternal
             IsToggle = true;
             Alignment = Pos.Center;
             TextPadding = new Padding(3, 0, 3, 0);
-        }
-
-        /// <summary>
-        /// Updates control colors.
-        /// </summary>
-        public override void UpdateColors()
-        {
-            if (IsDepressed || ToggleState)
-                TextColor = Skin.Colors.Category.Header_Closed;
-            else
-                TextColor = Skin.Colors.Category.Header;
         }
     }
 }

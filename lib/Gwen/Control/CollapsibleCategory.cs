@@ -168,7 +168,6 @@ namespace Gwen.Controls
                     continue;
 
                 button.m_Alt = b;
-                button.UpdateColors();
                 b = !b;
             }
         }

@@ -8,7 +8,20 @@ namespace Gwen.Controls
     /// Static text label.
     /// </summary>
     public class Label : ControlBase
-    {
+	{
+		#region Fields
+
+		protected readonly Text m_Text;
+		private Color m_TextColor;
+		private Color m_textColorOverride;
+		private Pos m_Align;
+		private bool m_AutoSizeToContents;
+		private Padding m_TextPadding;
+
+		#endregion Fields
+
+        #region Properties
+
         public override bool MouseInputEnabled
         {
             get
@@ -20,17 +33,32 @@ namespace Gwen.Controls
                 base.MouseInputEnabled = value;
             }
         }
-        #region Properties
-
         /// <summary>
         /// Text alignment.
         /// </summary>
-        public Pos Alignment { get { return m_Align; } set { m_Align = value; Invalidate(); } }
+        public Pos Alignment
+        {
+            get { return m_Align; }
+            set
+            {
+                m_Align = value;
+                Invalidate();
+            }
+        }
 
         /// <summary>
         /// Determines if the control should autosize to its text.
         /// </summary>
-        public bool AutoSizeToContents { get { return m_AutoSizeToContents; } set { m_AutoSizeToContents = value; Invalidate(); InvalidateParent(); } }
+        public bool AutoSizeToContents
+        {
+            get { return m_AutoSizeToContents; }
+            set
+            {
+                m_AutoSizeToContents = value;
+                Invalidate();
+                InvalidateParent();
+            }
+        }
 
         /// <summary>
         /// Font.
@@ -55,7 +83,18 @@ namespace Gwen.Controls
         /// <summary>
         /// Text color.
         /// </summary>
-        public Color TextColor { get { return m_Text.TextColor; } set { m_Text.TextColor = value; } }
+        public Color TextColor
+        {
+            get { return m_TextColor; }
+            set
+            {
+                if (m_TextColor != value)
+                {
+                    m_TextColor = value;
+                    Redraw();
+                }
+            }
+        }
 
         /// <summary>
         /// Height of the text (in pixels).
@@ -67,20 +106,61 @@ namespace Gwen.Controls
         /// </summary>
         public int TextLength { get { return m_Text.Length; } }
 
-		/// <summary>
-		/// Text color override - used by tooltips.
-		/// </summary>
-        public Color TextColorOverride { get; set; }
+        /// <summary>
+        /// Text color override - used by tooltips.
+        /// </summary>
+        public Color TextColorOverride
+        {
+            get
+            {
+                return m_textColorOverride;
+            }
 
-		/// <summary>
-		/// Text override - used to display different string.
-		/// </summary>
-        public string TextOverride { get; set; }
+            set
+            {
+                m_textColorOverride = value;
+                if (IsTextOverrideVisible)
+                {
+                    Redraw();
+                }
+            }
+        }
+
+        string m_TextOverride;
+
+        /// <summary>
+        /// Text override - used to display different string.
+        /// </summary>
+        public string TextOverride
+        {
+            get
+            {
+                return m_TextOverride;
+            }
+
+            set
+            {
+                m_TextOverride = value;
+                if (IsTextOverrideVisible)
+                {
+                    Redraw();
+                }
+            }
+        }
 
         /// <summary>
         /// Text padding.
         /// </summary>
-        public Padding TextPadding { get { return m_TextPadding; } set { m_TextPadding = value; Invalidate(); InvalidateParent(); } }
+        public Padding TextPadding
+        {
+            get { return m_TextPadding; }
+            set
+            {
+                m_TextPadding = value;
+                Invalidate();
+                InvalidateParent();
+            }
+        }
 
         public int TextRight { get { return m_Text.Right; } }
 
@@ -91,6 +171,31 @@ namespace Gwen.Controls
 
         public int TextX { get { return m_Text.X; } }
         public int TextY { get { return m_Text.Y; } }
+        public bool IsTextOverrideVisible
+        {
+            get
+            {
+                return TextColorOverride.A != 0;
+            }
+        }
+        protected virtual Color CurrentColor
+        {
+            get
+			{
+				if (IsDisabled)
+				{
+					return Skin.Colors.Button.Disabled;
+				}
+				else if (IsHovered && ClickEventAssigned)
+				{
+					return Skin.Colors.Button.Hover;
+				}
+				else
+				{
+                    return Skin.Colors.Button.Normal;
+				}
+            }
+        }
 
         #endregion Properties
 
@@ -106,10 +211,10 @@ namespace Gwen.Controls
             SetSize(100, m_Text.Height);
             Alignment = Pos.Left | Pos.Top;
 
-			m_AutoSizeToContents = true;
-			base.MouseInputEnabled = false;
+            m_AutoSizeToContents = true;
+            base.MouseInputEnabled = false;
             TextColorOverride = Color.FromArgb(0, 255, 255, 255);// A==0, override disabled
-		}
+        }
 
         #endregion Constructors
 
@@ -124,26 +229,6 @@ namespace Gwen.Controls
         {
             Point p = m_Text.GetCharacterPosition(index);
             return new Point(p.X + m_Text.X, p.Y + m_Text.Y);
-        }
-
-        public virtual void MakeColorBright()
-        {
-            TextColor = Skin.Colors.Label.Bright;
-        }
-
-        public virtual void MakeColorDark()
-        {
-            TextColor = Skin.Colors.Label.Dark;
-        }
-
-        public virtual void MakeColorHighlight()
-        {
-            TextColor = Skin.Colors.Label.Highlight;
-        }
-
-        public virtual void MakeColorNormal()
-        {
-            TextColor = Skin.Colors.Label.Default;
         }
 
         /// <summary>
@@ -176,33 +261,8 @@ namespace Gwen.Controls
             InvalidateParent();
         }
 
-        /// <summary>
-        /// Updates control colors.
-        /// </summary>
-        public override void UpdateColors()
-        {
-            if (IsDisabled)
-            {
-                TextColor = Skin.Colors.Button.Disabled;
-                return;
-            }
-
-            if (IsHovered && ClickEventAssigned)
-            {
-                TextColor = Skin.Colors.Button.Hover;
-                return;
-            }
-
-            TextColor = Skin.Colors.Button.Normal;
-        }
-
         #endregion Methods
 
-        #region Fields
-
-        protected readonly Text m_Text;
-
-        #endregion Fields
 
         /// <summary>
         /// Returns index of the character closest to specified point (in canvas coordinates).
@@ -255,6 +315,8 @@ namespace Gwen.Controls
         /// <param name="skin">Skin to use.</param>
         protected override void Render(Skin.SkinBase skin)
         {
+            base.Render(skin);
+            m_Text.TextColor = CurrentColor;
         }
 
         /// <summary>
@@ -266,9 +328,5 @@ namespace Gwen.Controls
         {
             m_Text.SetPosition(x, y);
         }
-
-        private Pos m_Align;
-        private bool m_AutoSizeToContents;
-        private Padding m_TextPadding;
     }
 }

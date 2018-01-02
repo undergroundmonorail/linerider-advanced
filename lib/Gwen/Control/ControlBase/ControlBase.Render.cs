@@ -13,40 +13,7 @@ namespace Gwen.Controls
 {
 	public partial class ControlBase
 	{
-		/// <summary>
-		/// Invalidates the control's children (relayout/repaint).
-		/// </summary>
-		/// <param name="recursive">Determines whether the operation should be carried recursively.</param>
-		protected virtual void InvalidateChildren(bool recursive = false)
-		{
-			foreach (ControlBase child in m_Children)
-			{
-				child.Invalidate();
-				if (recursive)
-					child.InvalidateChildren(true);
-			}
 
-			if (m_InnerPanel != null)
-			{
-				foreach (ControlBase child in m_InnerPanel.m_Children)
-				{
-					child.Invalidate();
-					if (recursive)
-						child.InvalidateChildren(true);
-				}
-			}
-		}
-		/// <summary>
-		/// Invalidates the control.
-		/// </summary>
-		/// <remarks>
-		/// Causes layout, repaint, invalidates cached texture.
-		/// </remarks>
-		public virtual void Invalidate()
-		{
-			m_NeedsLayout = true;
-			m_CacheTextureDirty = true;
-		}
         /// <summary>
 		/// Renders the control using specified skin.
 		/// </summary>
@@ -228,12 +195,46 @@ namespace Gwen.Controls
 			}
 		}
 
+        /// <summary>
+        /// Invalidates the control.
+        /// </summary>
+        /// <remarks>
+        /// Causes layout, repaint, invalidates cached texture.
+        /// </remarks>
+        public virtual void Invalidate()
+        {
+            m_NeedsLayout = true;
+            m_CacheTextureDirty = true;
+        }
+		/// <summary>
+		/// Invalidates the control's children (relayout/repaint).
+		/// </summary>
+		/// <param name="recursive">Determines whether the operation should be carried recursively.</param>
+		protected virtual void InvalidateChildren(bool recursive = false)
+		{
+			foreach (ControlBase child in m_Children)
+			{
+				child.Invalidate();
+				if (recursive)
+					child.InvalidateChildren(true);
+			}
+
+			if (m_InnerPanel != null)
+			{
+				foreach (ControlBase child in m_InnerPanel.m_Children)
+				{
+					child.Invalidate();
+					if (recursive)
+						child.InvalidateChildren(true);
+				}
+			}
+		}
 		/// <summary>
 		/// Re-renders the control, invalidates cached texture.
 		/// </summary>
 		public virtual void Redraw()
 		{
-			UpdateColors();
+            //todo properly implement control parenting for canvas access
 			m_CacheTextureDirty = true;
 			if (m_Parent != null)
 				m_Parent.Redraw();
