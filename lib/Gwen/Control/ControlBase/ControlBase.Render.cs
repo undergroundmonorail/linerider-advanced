@@ -229,6 +229,16 @@ namespace Gwen.Controls
 				}
 			}
 		}
+        /// <summary>
+        /// Invalidates control's parent.
+        /// </summary>
+        public void InvalidateParent()
+        {
+            if (m_Parent != null)
+            {
+                m_Parent.Invalidate();
+            }
+        }
 		/// <summary>
 		/// Re-renders the control, invalidates cached texture.
 		/// </summary>

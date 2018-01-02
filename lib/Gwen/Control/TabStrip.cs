@@ -74,8 +74,9 @@ namespace Gwen.Controls
             ControlBase droppedOn = GetControlAt(LocalPos.X, LocalPos.Y);
             if (droppedOn != null)
             {
-                Point dropPos = droppedOn.CanvasPosToLocal(new Point(x, y));
-                DragAndDrop.SourceControl.BringNextToControl(droppedOn, dropPos.X > droppedOn.Width/2);
+               // Point dropPos = droppedOn.CanvasPosToLocal(new Point(x, y));
+                //DragAndDrop.SourceControl.BringNextToControl(droppedOn, dropPos.X > droppedOn.Width/2);
+                droppedOn.BringToFront();
             }
             else
             {
