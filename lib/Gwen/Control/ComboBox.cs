@@ -307,7 +307,7 @@ namespace Gwen.Controls
 				{
 					if (m_Menu.Children[i] == m_SelectedItem)
 					{
-						OnItemSelected(this, new ItemSelectedEventArgs(m_Menu.Children[i + 1]));
+						OnItemSelected(this, new ItemSelectedEventArgs(m_Menu.Children[i - 1]));
 					}
 				}
             }
