@@ -249,31 +249,48 @@ namespace Gwen.Controls
         /// </summary>
         public virtual void SendToBack()
         {
-            if (m_ActualParent == null)
+            if (m_Parent == null)
                 return;
-            if (m_ActualParent.m_Children.Count == 0)
-                return;
-            if (m_ActualParent.m_Children.First() == this)
-                return;
-
-            m_ActualParent.m_Children.Remove(this);
-            m_ActualParent.m_Children.Insert(0, this);
-
+            var idx = m_Parent.Children.IndexOf(this);
+            if (idx != -1)
+			{
+				m_Parent.Children.SendToBack(idx);
+            }
+            else
+			{
+                if (m_Parent.m_InnerPanel != null)
+				{
+					idx = m_Parent.m_Children.IndexOf(this);
+				}
+				if (idx == -1)
+					throw new Exception("Unable to send control to back of parent -- index missing");
+				m_Parent.m_Children.SendToBack(idx);
+            }
             InvalidateParent();
         }
 
         /// <summary>
-        /// Brings the control to the top of paren't visibility stack.
+        /// Brings the control to the top of parent visibility stack.
         /// </summary>
         public virtual void BringToFront()
         {
-            if (m_ActualParent == null)
-                return;
-            if (m_ActualParent.m_Children.Last() == this)
-                return;
-
-            m_ActualParent.m_Children.Remove(this);
-            m_ActualParent.m_Children.Add(this);
+            if (m_Parent == null)
+				return;
+			var idx = m_Parent.Children.IndexOf(this);
+			if (idx != -1)
+			{
+				m_Parent.Children.BringToFront(idx);
+			}
+			else
+			{
+				if (m_Parent.m_InnerPanel != null)
+				{
+					idx = m_Parent.m_Children.IndexOf(this);
+				}
+				if (idx == -1)
+					throw new Exception("Unable to send control to front of parent -- index missing");
+				m_Parent.m_Children.BringToFront(idx);
+			}
             InvalidateParent();
             Redraw();
         }
@@ -296,7 +313,6 @@ namespace Gwen.Controls
                 if (!m_Children.Contains(child))
                     m_Children.Add(child);
                 child.m_Parent = this;
-                child.m_ActualParent = this;
             }
             OnChildAdded(child);
         }

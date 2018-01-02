@@ -153,6 +153,7 @@
     <Compile Include="Control\ControlBase\ControlBase.Layout.cs" />
     <Compile Include="Control\ControlBase\ControlBase.Input.cs" />
     <Compile Include="Control\ControlBase\ControlBase.Render.cs" />
+    <Compile Include="Control\ControlBase\ControlBase.ControlCollection.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

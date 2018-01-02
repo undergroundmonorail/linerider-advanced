@@ -281,9 +281,13 @@ namespace Gwen.Controls
         {
             if (down)
             {
-                var it = m_Menu.Children.FindIndex(x => x == m_SelectedItem);
-                if (it + 1 < m_Menu.Children.Count)
-                    OnItemSelected(this, new ItemSelectedEventArgs(m_Menu.Children[it + 1]));
+                for (int i = 0; i < m_Menu.Children.Count - 1; i++)
+                {
+                    if (m_Menu.Children[i] == m_SelectedItem)
+                    {
+                        OnItemSelected(this, new ItemSelectedEventArgs(m_Menu.Children[i + 1]));
+                    }
+                }
             }
             return true;
         }
@@ -298,10 +302,14 @@ namespace Gwen.Controls
         protected override bool OnKeyUp(bool down)
         {
             if (down)
-            {
-                var it = m_Menu.Children.FindLastIndex(x => x == m_SelectedItem);
-                if (it - 1 >= 0)
-                    OnItemSelected(this, new ItemSelectedEventArgs(m_Menu.Children[it - 1]));
+			{
+				for (int i = 1; i < m_Menu.Children.Count; i++)
+				{
+					if (m_Menu.Children[i] == m_SelectedItem)
+					{
+						OnItemSelected(this, new ItemSelectedEventArgs(m_Menu.Children[i + 1]));
+					}
+				}
             }
             return true;
         }

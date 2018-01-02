@@ -125,8 +125,8 @@ namespace Gwen.Controls
         /// <param name="delta">Scroll delta.</param>
         protected virtual bool OnMouseWheeled(int delta)
         {
-            if (m_ActualParent != null)
-                return m_ActualParent.OnMouseWheeled(delta);
+            if (m_Parent != null)
+                return m_Parent.OnMouseWheeled(delta);
 
             return false;
         }

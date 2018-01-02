@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace Gwen.Controls
@@ -26,12 +25,6 @@ namespace Gwen.Controls
         private bool m_Disposed;
 
         private ControlBase m_Parent;
-
-        /// <summary>
-        /// This is the panel's actual parent - most likely the logical
-        /// parent's InnerPanel (if it has one). You should rarely need this.
-        /// </summary>
-        private ControlBase m_ActualParent;
 
         /// <summary>
         /// If the innerpanel exists our children will automatically become children of that
@@ -75,7 +68,7 @@ namespace Gwen.Controls
         /// <summary>
         /// Real list of children.
         /// </summary>
-        private readonly List<ControlBase> m_Children;
+        private readonly ControlCollection m_Children;
 
 
         /// <summary>
@@ -88,7 +81,7 @@ namespace Gwen.Controls
         /// <summary>
         /// Logical list of children. If InnerPanel is not null, returns InnerPanel's children.
         /// </summary>
-        public virtual List<ControlBase> Children
+        public virtual ControlCollection Children
         {
             get
             {
@@ -115,7 +108,6 @@ namespace Gwen.Controls
                 }
 
                 m_Parent = value;
-                m_ActualParent = null;
 
                 if (m_Parent != null)
                 {
@@ -231,7 +223,17 @@ namespace Gwen.Controls
         /// <summary>
         /// Indicates whether the control is on top of its parent's children.
         /// </summary>
-        public virtual bool IsOnTop { get { return this == Parent.m_Children.First(); } } // todo: validate
+        public virtual bool IsOnTop
+        {
+            get
+            {
+                if (m_Parent != null && m_Parent.Children.Count != 0)
+                {
+                    return m_Parent.Children[m_Parent.Children.Count - 1] == this;
+                }
+                return false;
+            }
+        }
 
         /// <summary>
         /// User data associated with the control.
@@ -396,7 +398,7 @@ namespace Gwen.Controls
         /// <param name="parent">Parent control.</param>
         public ControlBase(ControlBase parent = null)
         {
-            m_Children = new List<ControlBase>();
+            m_Children = new ControlCollection(this);
             m_Accelerators = new Dictionary<string, GwenEventHandler<EventArgs>>();
 
             Parent = parent;
@@ -495,11 +497,10 @@ namespace Gwen.Controls
         /// <returns></returns>
         public virtual Canvas GetCanvas()
         {
-            ControlBase canvas = m_Parent;
-            if (canvas == null)
+            if (m_Parent == null)
                 return null;
 
-            return canvas.GetCanvas();
+            return m_Parent.GetCanvas();
         }
 
         /// <summary>
@@ -551,15 +552,17 @@ namespace Gwen.Controls
         /// <returns>Found control or null.</returns>
         public virtual ControlBase FindChildByName(string name, bool recursive = false)
         {
-            ControlBase b = m_Children.Find(x => x.m_Name == name);
-            if (b != null)
-                return b;
+            for (int i = 0; i < m_Children.Count; i++)
+            {
+                if (m_Children[i].Name == name)
+                    return m_Children[i];
+            }
 
             if (recursive)
             {
                 foreach (ControlBase child in m_Children)
                 {
-                    b = child.FindChildByName(name, true);
+                    var b = child.FindChildByName(name, true);
                     if (b != null)
                         return b;
                 }
@@ -746,10 +749,9 @@ namespace Gwen.Controls
             if (x < 0 || y < 0 || x >= Width || y >= Height)
                 return null;
 
-            // todo: convert to linq FindLast
-            var rev = ((IList<ControlBase>)m_Children).Reverse(); // IList.Reverse creates new list, List.Reverse works in place.. go figure
-            foreach (ControlBase child in rev)
+            for (int i = m_Children.Count - 1; i >= 0; i--)
             {
+                var child = m_Children[i];
                 ControlBase found = child.GetControlAt(x - child.X, y - child.Y);
                 if (found != null)
                     return found;
@@ -823,8 +825,8 @@ namespace Gwen.Controls
             //Debug.Print("Base.CloseMenus: {0}", this);
 
             // todo: not very efficient with the copying and recursive closing, maybe store currently open menus somewhere (canvas)?
-            var childrenCopy = m_Children.FindAll(x => true);
-            foreach (ControlBase child in childrenCopy)
+            var copy = m_Children.ToArray();
+            foreach (ControlBase child in copy)
             {
                 child.CloseMenus();
             }
