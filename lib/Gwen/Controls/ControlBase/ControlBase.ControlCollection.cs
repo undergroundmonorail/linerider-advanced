@@ -94,7 +94,7 @@ namespace Gwen.Controls
             {
                 if (!Contains(item))
                 {
-                    if (item.m_Parent != _owner)
+                    if (item.m_Parent != null && item.m_Parent != _owner)
                     {
                         //remove previous parent
                         item.m_Parent.RemoveChild(item,false);

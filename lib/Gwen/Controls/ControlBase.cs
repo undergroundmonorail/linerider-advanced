@@ -775,13 +775,14 @@ namespace Gwen.Controls
                 int x = pnt.X + X;
                 int y = pnt.Y + Y;
 
-                // If our parent has an innerpanel and we're a child of it
+                // If our parent is a container and we're a child of it
                 // add its offset onto us.
                 //
-                if (m_Parent.m_InnerPanel != null && m_Parent.m_InnerPanel.IsChild(this))
-                {
-                    x += m_Parent.m_InnerPanel.X;
-                    y += m_Parent.m_InnerPanel.Y;
+                var container = m_Parent as Container;
+                if (container != null && container.Children.Contains(this))
+				{
+                    x += container.PanelBounds.X;
+                    y += container.PanelBounds.Y;
                 }
 
                 return m_Parent.LocalPosToCanvas(new Point(x, y));
@@ -802,16 +803,18 @@ namespace Gwen.Controls
                 int x = pnt.X - X;
                 int y = pnt.Y - Y;
 
-                // If our parent has an innerpanel and we're a child of it
+                // If our parent is a container and we're a child of it
                 // add its offset onto us.
                 //
-                if (m_Parent.m_InnerPanel != null && m_Parent.m_InnerPanel.IsChild(this))
-                {
-                    x -= m_Parent.m_InnerPanel.X;
-                    y -= m_Parent.m_InnerPanel.Y;
-                }
+				var container = m_Parent as Container;
+				if (container != null && container.Children.Contains(this))
+				{
+					x -= container.PanelBounds.X;
+					y -= container.PanelBounds.Y;
+				}
 
-                return m_Parent.CanvasPosToLocal(new Point(x, y));
+
+				return m_Parent.CanvasPosToLocal(new Point(x, y));
             }
 
             return pnt;
