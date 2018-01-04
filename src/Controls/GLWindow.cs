@@ -358,7 +358,7 @@ namespace linerider
         {
             base.OnResize(e);
             Canvas.SetSize(RenderSize.Width, RenderSize.Height);
-            Canvas.FindChildByName("buttons").Position(Pos.CenterH);
+            Canvas.FindChildByName("buttons").AlignToEdge(Pos.CenterH);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
@@ -1035,7 +1035,7 @@ namespace linerider
             Canvas.ColorControls = cc;
             ctrl.SizeToChildren();
             ctrl.ShouldCacheToTexture = true;
-            ctrl.Position(Pos.CenterH);
+            ctrl.AlignToEdge(Pos.CenterH);
 
             __controlsInitialized = true;
             Canvas.ButtonsToggleNightmode();

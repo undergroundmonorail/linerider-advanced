@@ -1056,6 +1056,7 @@ namespace linerider
                     }
                 }
                 saveindex++;
+                //todo this means if they rename their track files they dont get autosaves...
                 if (saveindex < 2 && !Crash)
                     return;
                 var save = Crash ? (saveindex + " " + "Crash Backup") : " Autosave";
