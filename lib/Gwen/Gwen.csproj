@@ -63,11 +63,9 @@
     <Compile Include="Controls\MultilineTextBox.cs" />
     <Compile Include="Controls\Property\KeyProperty.cs" />
     <Compile Include="Controls\Property\LabelProperty.cs" />
-    <Compile Include="Controls\VerticalSplitter.cs" />
-    <Compile Include="Controls\Layout\Positioner.cs" />
     <Compile Include="Controls\MessageBox.cs" />
     <Compile Include="Controls\ProgressBar.cs" />
-    <Compile Include="Controls\Properties.cs" />
+    <Compile Include="Controls\PropertyTable.cs" />
     <Compile Include="Controls\PropertyRow.cs" />
     <Compile Include="ControlInternal\PropertyRowLabel.cs" />
     <Compile Include="Controls\PropertyTree.cs" />
@@ -86,13 +84,11 @@
     <Compile Include="ControlInternal\ScrollBarBar.cs" />
     <Compile Include="ControlInternal\ScrollBarButton.cs" />
     <Compile Include="ControlInternal\Text.cs" />
-    <Compile Include="Controls\ControlBase.cs" />
     <Compile Include="Controls\ScrollBar.cs" />
     <Compile Include="Controls\Button.cs" />
     <Compile Include="Controls\Canvas.cs" />
     <Compile Include="Controls\CheckBox.cs" />
     <Compile Include="Controls\ColorSlider.cs" />
-    <Compile Include="Controls\CrossSplitter.cs" />
     <Compile Include="Controls\GroupBox.cs" />
     <Compile Include="Controls\HorizontalSlider.cs" />
     <Compile Include="Controls\IColorPicker.cs" />
@@ -103,8 +99,6 @@
     <Compile Include="Controls\Label.cs" />
     <Compile Include="Controls\LabeledRadioButton.cs" />
     <Compile Include="Controls\Layout\Splitter.cs" />
-    <Compile Include="Controls\Layout\Table.cs" />
-    <Compile Include="Controls\Layout\TableRow.cs" />
     <Compile Include="Controls\ListBox.cs" />
     <Compile Include="Controls\ListBoxRow.cs" />
     <Compile Include="Controls\Menu.cs" />
@@ -124,7 +118,6 @@
     <Compile Include="Controls\TreeNode.cs" />
     <Compile Include="Controls\VerticalScrollBar.cs" />
     <Compile Include="Controls\VerticalSlider.cs" />
-    <Compile Include="Controls\HorizontalSplitter.cs" />
     <Compile Include="Controls\WindowControl.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="HSV.cs" />
@@ -155,6 +148,8 @@
     <Compile Include="Controls\ControlBase\ControlBase.Render.cs" />
     <Compile Include="Controls\ControlBase\ControlBase.ControlCollection.cs" />
     <Compile Include="Controls\Container.cs" />
+    <Compile Include="Controls\TabPage.cs" />
+    <Compile Include="Controls\ControlBase\ControlBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
