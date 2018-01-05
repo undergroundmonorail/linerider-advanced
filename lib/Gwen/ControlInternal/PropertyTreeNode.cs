@@ -24,7 +24,7 @@ namespace Gwen.ControlInternal
         /// <param name="skin">Skin to use.</param>
         protected override void Render(Skin.SkinBase skin)
         {
-            skin.DrawPropertyTreeNode(this, m_InnerPanel.X, m_InnerPanel.Y);
+            skin.DrawPropertyTreeNode(this, m_Panel.X, m_Panel.Y);
         }
     }
 }

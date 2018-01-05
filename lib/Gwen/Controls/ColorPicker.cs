@@ -62,7 +62,7 @@ namespace Gwen.Controls
 
             GroupBox colorGroup = new GroupBox(this);
             colorGroup.SetPosition(10, y);
-            colorGroup.SetText(name);
+            colorGroup.Text = name;
             colorGroup.SetSize(160, 35);
             colorGroup.Name = name + "groupbox";
 
@@ -126,7 +126,7 @@ namespace Gwen.Controls
             GroupBox finalGroup = new GroupBox(this);
             finalGroup.SetPosition(180, 40);
             finalGroup.SetSize(60, 60);
-            finalGroup.SetText("Result");
+            finalGroup.Text = "Result";
             finalGroup.Name = "ResultGroupBox";
 
             ColorDisplay disp = new ColorDisplay(finalGroup);
@@ -184,9 +184,10 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            base.Layout(skin);
+            //todo investigate if this works.
+            base.PrepareLayout();
 
             SizeToChildren(false, true);
             SetSize(Width, Height + 5);

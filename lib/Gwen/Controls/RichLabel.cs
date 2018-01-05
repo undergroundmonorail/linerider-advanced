@@ -109,12 +109,11 @@ namespace Gwen.Controls
             label.TextColor = block.Color;
             label.TextColorOverride = block.Color;
             label.Font = font;
-            label.SizeToContents();
             label.SetPosition(x, y);
-
+//todo richlabel untested
             //lineheight = (lineheight + pLabel.Height()) / 2;
 
-            x += label.Width;
+            x += label.TextWidth;
 
             if (x >= Width)
             {
@@ -128,13 +127,9 @@ namespace Gwen.Controls
             y += lineHeight;
         }
 
-        /// <summary>
-        /// Lays out the control's interior according to alignment, padding, dock etc.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            base.Layout(skin);
+            base.PrepareLayout();
             if (m_NeedsRebuild)
                 Rebuild();
 

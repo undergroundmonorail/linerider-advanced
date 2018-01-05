@@ -26,13 +26,13 @@ namespace Gwen.Controls
         {
             DeleteOnClose = true;
 
-            m_Label = new Label(m_InnerPanel);
+            m_Label = new Label(m_Panel);
             m_Label.Text = text;
             m_Label.Margin = Margin.Five;
             m_Label.Dock = Pos.Top;
             m_Label.Alignment = Pos.Center;
 
-            m_Button = new Button(m_InnerPanel);
+            m_Button = new Button(m_Panel);
             m_Button.Text = "OK"; // todo: parametrize buttons
             m_Button.Clicked += CloseButtonPressed;
             m_Button.Clicked += DismissedHandler;
@@ -52,14 +52,14 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            base.Layout(skin);
+            base.PrepareLayout();
 
             Align.PlaceDownLeft(m_Button, m_Label, 10);
             Align.CenterHorizontally(m_Button);
-            m_InnerPanel.SizeToChildren();
-            m_InnerPanel.Height += 10;
+            m_Panel.SizeToChildren();
+            m_Panel.Height += 10;
             SizeToChildren();
         }
     }

@@ -7,31 +7,61 @@ namespace Gwen.Controls
     /// Group box (container).
     /// </summary>
     /// <remarks>Don't use autosize with docking.</remarks>
-    public class GroupBox : Label
+    public class GroupBox : Container
     {
-        #region Constructors
+        protected Label m_Label;
+        /// <summary>
+        /// Font.
+        /// </summary>
+        public Font Font
+        {
+            get { return m_Label.Font; }
+            set
+            {
+                m_Label.Font = value;
+                Invalidate();
+            }
+        }
 
+        /// <summary>
+        /// Text.
+        /// </summary>
+        public virtual string Text
+        {
+            get
+            {
+                return m_Label.Text;
+            }
+            set
+            {
+                m_Label.Text = value;
+            }
+        }
+
+        protected override Margin PanelMargin
+        {
+            get
+            {
+                return new Margin(5, m_Label.TextHeight + 5, 5, 5);
+            }
+        }
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupBox"/> class.
         /// </summary>
         /// <param name="parent">Parent control.</param>
         public GroupBox(ControlBase parent) : base(parent)
         {
-            AutoSizeToContents = false;
-
             // Set to true, because it's likely that our
             // children will want mouse input, and they
             // can't get it without us..
             MouseInputEnabled = true;
             KeyboardInputEnabled = true;
 
-            TextPadding = new Padding(10, 0, 10, 0);
-            Alignment = Pos.Top | Pos.Left;
+            m_Label.TextPadding = new Padding(10, 0, 10, 0);
+            m_Label.Alignment = Pos.Top | Pos.Left;
             Invalidate();
-
-            m_InnerPanel = new ControlBase(this);
-            m_InnerPanel.Dock = Pos.Fill;
-            m_InnerPanel.Margin = new Margin(5, TextHeight + 5, 5, 5);
+//todo test groupbox
             //Margin = new Margin(5, 5, 5, 5);
         }
 
@@ -40,42 +70,12 @@ namespace Gwen.Controls
         #region Methods
 
         /// <summary>
-        /// Sizes to contents.
-        /// </summary>
-        public override void SizeToContents()
-        {
-            // we inherit from Label and shouldn't use its method.
-            DoSizeToContents();
-        }
-
-        protected virtual void DoSizeToContents()
-        {
-            m_InnerPanel.SizeToChildren();
-            SizeToChildren();
-            if (Width < TextWidth + TextPadding.Right + TextPadding.Left)
-                Width = TextWidth + TextPadding.Right + TextPadding.Left;
-        }
-
-        /// <summary>
-        /// Lays out the control's interior according to alignment, padding, dock etc.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
-        {
-            base.Layout(skin);
-            if (AutoSizeToContents)
-            {
-                DoSizeToContents();
-            }
-        }
-
-        /// <summary>
         /// Renders the control using specified skin.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
         protected override void Render(Skin.SkinBase skin)
         {
-            skin.DrawGroupBox(this, TextX, TextHeight, TextWidth);
+            skin.DrawGroupBox(this, m_Label.TextX, m_Label.TextHeight, m_Label.TextWidth);
         }
 
         #endregion Methods

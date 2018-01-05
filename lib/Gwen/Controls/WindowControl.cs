@@ -96,14 +96,11 @@ namespace Gwen.Controls
             m_CloseButton.IsTabable = false;
             m_CloseButton.Name = "closeButton";
             //Create a blank content control, dock it to the top - Should this be a ScrollControl?
-            m_InnerPanel = new ControlBase(this);
-           // m_InnerPanel.Padding = new Padding(6,6,6,6);
-            m_InnerPanel.Dock = Pos.Fill;
             GetResizer(8).Hide();
             BringToFront();
             IsTabable = false;
             Focus();
-            MinimumSize = new Point(100, 40);
+            MinimumSize = new Size(100, 40);
             ClampMovement = true;
             KeyboardInputEnabled = false;
 

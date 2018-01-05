@@ -45,7 +45,7 @@ namespace Gwen.ControlInternal
             Rectangle oldBounds = m_Target.Bounds;
             Rectangle bounds = m_Target.Bounds;
 
-            Point min = m_Target.MinimumSize;
+            Size min = m_Target.MinimumSize;
 
             Point pCursorPos = m_Target.CanvasPosToLocal(new Point(x, y));
 
@@ -61,9 +61,9 @@ namespace Gwen.ControlInternal
                 // Conform to minimum size here so we don't
                 // go all weird when we snap it in the base conrt
 
-                if (bounds.Width < min.X)
+                if (bounds.Width < min.Width)
                 {
-                    int diff = min.X - bounds.Width;
+                    int diff = min.Width - bounds.Width;
                     bounds.Width += diff;
                     bounds.X -= diff;
                 }
@@ -77,9 +77,9 @@ namespace Gwen.ControlInternal
                 // Conform to minimum size here so we don't
                 // go all weird when we snap it in the base conrt
 
-                if (bounds.Height < min.Y)
+                if (bounds.Height < min.Height)
                 {
-                    int diff = min.Y - bounds.Height;
+                    int diff = min.Height - bounds.Height;
                     bounds.Height += diff;
                     bounds.Y -= diff;
                 }
@@ -96,7 +96,7 @@ namespace Gwen.ControlInternal
                 int woff = bounds.Width - m_HoldPos.X;
                 int diff = bounds.Width;
                 bounds.Width = pCursorPos.X + woff;
-                if (bounds.Width < min.X) bounds.Width = min.X;
+                if (bounds.Width < min.Width) bounds.Width = min.Width;
                 diff -= bounds.Width;
 
                 m_HoldPos.X -= diff;
@@ -107,7 +107,7 @@ namespace Gwen.ControlInternal
                 int hoff = bounds.Height - m_HoldPos.Y;
                 int diff = bounds.Height;
                 bounds.Height = pCursorPos.Y + hoff;
-                if (bounds.Height < min.Y) bounds.Height = min.Y;
+                if (bounds.Height < min.Height) bounds.Height = min.Height;
                 diff -= bounds.Height;
 
                 m_HoldPos.Y -= diff;

@@ -7,7 +7,7 @@ namespace Gwen.Controls
     /// <summary>
     /// Control with multiple tabs that can be reordered and dragged.
     /// </summary>
-    public class TabControl : ControlBase
+    public class TabControl : Container
     {
         private readonly TabStrip m_TabStrip;
         private readonly ScrollBarButton[] m_Scroll;
@@ -50,55 +50,56 @@ namespace Gwen.Controls
         /// <param name="parent">Parent control.</param>
         public TabControl(ControlBase parent)
             : base(parent)
-        {
-            m_Scroll = new ScrollBarButton[2];
+		{
+			this.PrivateChildren.Remove(m_Panel);
+            m_Panel.Dispose();
+            m_Panel = null;
+            m_Panel = new TabControlInner(null);
+			m_Panel.Dock = Pos.Fill;
+
+			m_Scroll = new ScrollBarButton[2];
             m_ScrollOffset = 0;
 
-            m_TabStrip = new TabStrip(this);
+            m_TabStrip = new TabStrip(null);
             m_TabStrip.StripPosition = Pos.Top;
 
             // Make this some special control?
-            m_Scroll[0] = new ScrollBarButton(this);
+            m_Scroll[0] = new ScrollBarButton(null);
             m_Scroll[0].SetDirectionLeft();
             m_Scroll[0].Clicked += ScrollPressedLeft;
             m_Scroll[0].SetSize(14, 16);
 
-            m_Scroll[1] = new ScrollBarButton(this);
+            m_Scroll[1] = new ScrollBarButton(null);
             m_Scroll[1].SetDirectionRight();
             m_Scroll[1].Clicked += ScrollPressedRight;
             m_Scroll[1].SetSize(14, 16);
 
-            m_InnerPanel = new TabControlInner(this);
-            m_InnerPanel.Dock = Pos.Fill;
-            m_InnerPanel.SendToBack();
+			PrivateChildren.Add(m_Panel);
+			PrivateChildren.Add(m_Scroll[0]);
+			PrivateChildren.Add(m_Scroll[1]);
+            PrivateChildren.Add(m_TabStrip);
 
             IsTabable = false;
         }
-
         /// <summary>
         /// Adds a new page/tab.
         /// </summary>
         /// <param name="label">Tab label.</param>
         /// <param name="page">Page contents.</param>
         /// <returns>Newly created control.</returns>
-        public TabButton AddPage(string label, ControlBase page = null)
+        public TabPage AddPage(string label, ControlBase page = null)
         {
-            if (null == page)
-            {
-                page = new ControlBase(this);
-            }
-            else
-            {
-                page.Parent = this;
-            }
-
-            TabButton button = new TabButton(m_TabStrip);
+			TabButton button = new TabButton(m_TabStrip);
+            var tabpage = new TabPage(this, button);
             button.SetText(label);
-            button.Page = page;
+            button.Page = tabpage;
             button.IsTabable = false;
-
+            if (page != null)
+            {
+                tabpage.AddChild(page);
+            }
             AddPage(button);
-            return button;
+            return tabpage;
         }
 
         /// <summary>
@@ -115,7 +116,6 @@ namespace Gwen.Controls
 
             button.Parent = m_TabStrip;
             button.Dock = Pos.Left;
-            button.SizeToContents();
             if (button.TabControl != null)
                 button.TabControl.UnsubscribeTabEvent(button);
             button.TabControl = this;
@@ -175,9 +175,9 @@ namespace Gwen.Controls
         /// Function invoked after layout.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void PostLayout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            base.PostLayout(skin);
+            base.PrepareLayout();
             HandleOverflow();
         }
 
@@ -205,20 +205,20 @@ namespace Gwen.Controls
 
         private void HandleOverflow()
         {
-            Point TabsSize = m_TabStrip.GetChildrenSize();
+            var TabsSize = m_TabStrip.GetSizeToFitContents();
 
             // Only enable the scrollers if the tabs are at the top.
             // This is a limitation we should explore.
             // Really TabControl should have derivitives for tabs placed elsewhere where we could specialize 
             // some functions like this for each direction.
-            bool needed = TabsSize.X > Width && m_TabStrip.Dock == Pos.Top;
+            bool needed = TabsSize.Width > Width && m_TabStrip.Dock == Pos.Top;
 
             m_Scroll[0].IsHidden = !needed;
             m_Scroll[1].IsHidden = !needed;
 
             if (!needed) return;
 
-            m_ScrollOffset = Util.Clamp(m_ScrollOffset, 0, TabsSize.X - Width + 32);
+            m_ScrollOffset = Util.Clamp(m_ScrollOffset, 0, TabsSize.Width - Width + 32);
 
 #if false
     //

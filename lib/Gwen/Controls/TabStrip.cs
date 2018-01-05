@@ -96,11 +96,7 @@ namespace Gwen.Controls
             return false;
         }
 
-        /// <summary>
-        /// Lays out the control's interior according to alignment, padding, dock etc.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
             Point largestTab = new Point(5, 5);
 
@@ -109,8 +105,6 @@ namespace Gwen.Controls
             {
                 TabButton button = child as TabButton;
                 if (null == button) continue;
-
-                button.SizeToContents();
 
                 Margin m = new Margin();
                 int notFirst = num > 0 ? -1 : 0;
@@ -152,7 +146,7 @@ namespace Gwen.Controls
             if (Dock == Pos.Left || Dock == Pos.Right)
                 SetSize(largestTab.X, Height);
 
-            base.Layout(skin);
+            base.PrepareLayout();
         }
 
         public override void DragAndDrop_HoverEnter(Package p, int x, int y)

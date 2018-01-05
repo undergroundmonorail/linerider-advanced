@@ -125,7 +125,7 @@ namespace Gwen.Controls
             : base(parent)
         {
             AutoSizeToContents = false;
-            SetSize(100, 20);
+            SetSize(100, TextHeight+6);
             MouseInputEnabled = true;
             Alignment = Pos.Center;
             TextPadding = new Padding(3, 3, 3, 3);
@@ -166,25 +166,10 @@ namespace Gwen.Controls
             m_Image.ImageName = textureName;
             m_Image.SizeToContents();
             m_Image.SetPosition(Math.Max(Padding.Left, 2), 2);
+            m_Image.Margin = new Margin(0, 2, 0, 2);
             m_CenterImage = center;
 
             TextPadding = new Padding(m_Image.Right + 2, TextPadding.Top, TextPadding.Right, TextPadding.Bottom);
-        }
-
-        /// <summary>
-        /// Sizes to contents.
-        /// </summary>
-        public override void SizeToContents()
-        {
-            base.SizeToContents();
-            if (m_Image != null)
-            {
-                int height = m_Image.Height + 4;
-                if (Height < height)
-                {
-                    Height = height;
-                }
-            }
         }
 
         /// <summary>
@@ -199,13 +184,13 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            base.Layout(skin);
             if (m_Image != null)
             {
-                m_Image.Position(m_CenterImage ? Pos.Center : Pos.CenterV);
-            }
+                m_Image.AlignToEdge(m_CenterImage ? Pos.Center : Pos.CenterV);
+			}
+			base.PrepareLayout();
         }
 
         /// <summary>

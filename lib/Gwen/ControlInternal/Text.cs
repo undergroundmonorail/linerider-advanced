@@ -115,6 +115,7 @@ namespace Gwen.ControlInternal
             m_String = String.Empty;
             TextColor = Skin.Colors.Label.Default;
             MouseInputEnabled = false;
+            AutoSizeToContents = true;
             SizeToContents();
         }
 
@@ -152,51 +153,35 @@ namespace Gwen.ControlInternal
         }
 
         /// <summary>
-        /// Lays out the control's interior according to alignment, padding, dock etc.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
-        {
-            SizeToContents();
-            base.Layout(skin);
-        }
-
-        /// <summary>
         /// Handler invoked when control's scale changes.
         /// </summary>
         protected override void OnScaleChanged()
         {
             Invalidate();
         }
+        public override Size GetSizeToFitContents()
+		{
+			if (String == null)
+                return new Size(Width,Height);
 
+			if (Font == null)
+			{
+				throw new InvalidOperationException("Text.SizeToContents() - No Font!!\n");
+			}
+			Point p = Skin.Renderer.MeasureText(Font, String);
+            return new Size(p.X, p.Y);
+        }
         /// <summary>
         /// Sizes the control to its contents.
         /// </summary>
         public void SizeToContents()
         {
-            if (String == null)
-                return;
-
-            if (Font == null)
-            {
-                throw new InvalidOperationException("Text.SizeToContents() - No Font!!\n");
-            }
-
-            Point p = new Point(1, Font.Size);
-
-            if (Length > 0)
-            {
-                p = Skin.Renderer.MeasureText(Font, String);
-            }
-
-            if (p.X == Width && p.Y == Height)
-                return;
-
-            SetSize(p.X, p.Y);
-            Invalidate();
-            InvalidateParent();
+            SizeToChildren(true,true);
         }
-
+        public override bool SizeToChildren(bool width = true, bool height = true)
+        {
+            return base.SizeToChildren(width, height);
+        }
         /// <summary>
         /// Gets the coordinates of specified character in the text.
         /// </summary>

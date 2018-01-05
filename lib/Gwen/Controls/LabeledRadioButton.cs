@@ -38,18 +38,14 @@ namespace Gwen.Controls
 			m_Label.Clicked += delegate(ControlBase control, ClickedEventArgs args) { m_RadioButton.Press(control); };
             m_Label.IsTabable = false;
             m_Label.KeyboardInputEnabled = false;
+            m_Label.Margin = new Margin(0, 0, m_RadioButton.Width, 0);
+            AutoSizeToContents = true;
         }
 
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            // ugly stuff because we don't have anchoring without docking (docking resizes children)
-            if (m_Label.Height > m_RadioButton.Height) // usually radio is smaller than label so it gets repositioned to avoid clipping with negative Y
-            {
-                m_RadioButton.Y = (m_Label.Height - m_RadioButton.Height)/2;
-            }
-            Align.PlaceRightBottom(m_Label, m_RadioButton);
-            SizeToChildren();
-            base.Layout(skin);
+            m_RadioButton.AlignToEdge(Pos.Left | Pos.CenterV);
+            base.PrepareLayout();
         }
 
         /// <summary>

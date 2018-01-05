@@ -36,7 +36,7 @@ namespace Gwen.Controls
         public void UpdateFromTab(TabButton button)
         {
             Text = button.Text;
-            SizeToContents();
+            SizeToChildren();
         }
     }
 }

@@ -86,19 +86,20 @@ namespace Gwen.Controls
         #region Methods
 
         /// <summary>
-        /// Lays out the control's interior according to alignment, padding, dock etc.
+        /// Function invoked before layout, after AutoSizeToContents if applicable
+        /// Is called regardless of needslayout.
         /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            Properties parent = Parent as Properties;
+            base.PrepareLayout();
+            PropertyTable parent = Parent as PropertyTable;
             if (null == parent) return;
 
             m_Label.Width = parent.SplitWidth;
 
             if (m_Property != null)
             {
-                Height = m_Property.Height;
+                Height = Math.Max(m_Property.Height, m_Label.TextHeight);
             }
         }
 
@@ -157,7 +158,7 @@ namespace Gwen.Controls
         }
         public override void SetToolTipText(string text)
         {
-              base.SetToolTipText(text);
+            base.SetToolTipText(text);
             m_Label.SetToolTipText(text);
         }
     }

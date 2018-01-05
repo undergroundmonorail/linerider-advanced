@@ -56,9 +56,9 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            base.Layout(skin);
+            base.PrepareLayout();
 
             m_ScrollButton[0].Height = Width;
             m_ScrollButton[0].Dock = Pos.Top;

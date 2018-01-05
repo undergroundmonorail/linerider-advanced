@@ -173,7 +173,7 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
             int childrenHeight = Children.Sum(child => child != null ? child.Height : 0);
 
@@ -182,7 +182,7 @@ namespace Gwen.Controls
 
             SetSize(Width, childrenHeight);
 
-            base.Layout(skin);
+            base.PrepareLayout();
         }
 
         /// <summary>
@@ -193,7 +193,9 @@ namespace Gwen.Controls
         {
             item.TextPadding = new Padding(IconMarginDisabled ? 0 : 24, 0, 16, 0);
             item.Dock = Pos.Top;
-            item.SizeToContents();
+            //todo test menu sizing
+            item.SizeToChildren(true,true);
+            
             item.Alignment = Pos.CenterV | Pos.Left;
             item.HoverEnter += OnHoverItem;
 

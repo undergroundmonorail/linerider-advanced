@@ -15,7 +15,6 @@ namespace Gwen.Controls
 		private Color m_TextColor;
 		private Color m_textColorOverride;
 		private Pos m_Align;
-		private bool m_AutoSizeToContents;
 		private Padding m_TextPadding;
 
 		#endregion Fields
@@ -45,21 +44,6 @@ namespace Gwen.Controls
                 Invalidate();
             }
         }
-
-        /// <summary>
-        /// Determines if the control should autosize to its text.
-        /// </summary>
-        public bool AutoSizeToContents
-        {
-            get { return m_AutoSizeToContents; }
-            set
-            {
-                m_AutoSizeToContents = value;
-                Invalidate();
-                InvalidateParent();
-            }
-        }
-
         /// <summary>
         /// Font.
         /// </summary>
@@ -69,9 +53,8 @@ namespace Gwen.Controls
             set
             {
                 m_Text.Font = value;
-                if (m_AutoSizeToContents)
-                    SizeToContents();
                 Invalidate();
+                InvalidateParent();
             }
         }
 
@@ -211,9 +194,10 @@ namespace Gwen.Controls
             SetSize(100, m_Text.Height);
             Alignment = Pos.Left | Pos.Top;
 
-            m_AutoSizeToContents = true;
+            AutoSizeToContents = true;
             base.MouseInputEnabled = false;
             TextColorOverride = Color.FromArgb(0, 255, 255, 255);// A==0, override disabled
+            BoundsOutlineColor = Color.LawnGreen;
         }
 
         #endregion Constructors
@@ -242,25 +226,12 @@ namespace Gwen.Controls
                 return;
 
             m_Text.String = str;
-            if (m_AutoSizeToContents)
-                SizeToContents();
             Invalidate();
             InvalidateParent();
 
             if (doEvents)
                 OnTextChanged();
         }
-
-        public virtual void SizeToContents()
-        {
-            m_Text.SetPosition(m_TextPadding.Left + Padding.Left, m_TextPadding.Top + Padding.Top);
-            m_Text.SizeToContents();
-
-            SetSize(m_Text.Width + Padding.Left + Padding.Right + m_TextPadding.Left + m_TextPadding.Right,
-                m_Text.Height + Padding.Top + Padding.Bottom + m_TextPadding.Top + m_TextPadding.Bottom);
-            InvalidateParent();
-        }
-
         #endregion Methods
 
 
@@ -279,29 +250,10 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            base.Layout(skin);
-
-            Pos align = m_Align;
-
-            if (m_AutoSizeToContents)
-                SizeToContents();
-
-            int x = m_TextPadding.Left + Padding.Left;
-            int y = m_TextPadding.Top + Padding.Top;
-
-            if (0 != (align & Pos.Right))
-                x = Width - m_Text.Width - m_TextPadding.Right - Padding.Right;
-            if (0 != (align & Pos.CenterH))
-                x = (int)((m_TextPadding.Left + Padding.Left) + ((Width - m_Text.Width - m_TextPadding.Left - Padding.Left - m_TextPadding.Right - Padding.Right) * 0.5f));
-
-            if (0 != (align & Pos.CenterV))
-                y = (int)((m_TextPadding.Top + Padding.Top) + ((Height - m_Text.Height) * 0.5f) - m_TextPadding.Bottom - Padding.Bottom);
-            if (0 != (align & Pos.Bottom))
-                y = Height - m_Text.Height - m_TextPadding.Bottom - Padding.Bottom;
-
-            m_Text.SetPosition(x, y);
+            base.PrepareLayout();
+            m_Text.AlignToEdge(m_Align, m_TextPadding);
         }
 
         /// <summary>

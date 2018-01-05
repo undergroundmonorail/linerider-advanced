@@ -40,8 +40,15 @@ namespace Gwen.Controls
                 _controls = new List<ControlBase>();
             }
 
+            public void SendToBack(ControlBase child)
+            {
+                var index = IndexOf(child);
+                SendToBack(index);
+            }
             internal void SendToBack(int index)
             {
+                if (index == -1)
+                    throw new Exception("Child not found in parent who called SendToBack");
                 if (Count != 0 && index != 0)
                 {
                     var control = _controls[index];
@@ -51,12 +58,19 @@ namespace Gwen.Controls
             }
             internal void BringToFront(int index)
             {
+                if (index == -1)
+                    throw new Exception("Child not found in parent who called BringToFront");
                 if (Count != 0 && index != Count - 1)
                 {
                     var control = _controls[index];
                     _controls.RemoveAt(index);
                     _controls.Add(control);
                 }
+            }
+            public void BringToFront(ControlBase child)
+            {
+                var index = IndexOf(child);
+                BringToFront(index);
             }
 
             public void Add(ControlBase item)
@@ -97,10 +111,11 @@ namespace Gwen.Controls
                     if (item.m_Parent != null && item.m_Parent != _owner)
                     {
                         //remove previous parent
-                        item.m_Parent.RemoveChild(item,false);
+                        item.m_Parent.RemoveChild(item, false);
                     }
                     _controls.Insert(index, item);
                     item.m_Parent = _owner;
+                    _owner.OnChildAdded(item);
                 }
             }
 
@@ -115,8 +130,11 @@ namespace Gwen.Controls
 
             public void RemoveAt(int index)
             {
-                _controls[index].m_Parent = null;
+                var toremove = _controls[index];
+                toremove.m_Parent = null;
                 _controls.RemoveAt(index);
+                _owner.OnChildRemoved(toremove);
+
             }
             public ControlBase[] ToArray()
             {

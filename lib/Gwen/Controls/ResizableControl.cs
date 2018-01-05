@@ -7,7 +7,7 @@ namespace Gwen.Controls
     /// <summary>
     /// Base resizable control.
     /// </summary>
-    public class ResizableControl : ControlBase
+    public class ResizableControl : Container
     {
         private bool m_ClampMovement;
         private readonly Resizer[] m_Resizer;
@@ -30,7 +30,7 @@ namespace Gwen.Controls
             : base(parent)
         {
             m_Resizer = new Resizer[10];
-            MinimumSize = new Point(5, 5);
+            MinimumSize = new Size(5, 5);
             m_ClampMovement = false;
 
             m_Resizer[2] = new Resizer(this);
@@ -139,10 +139,10 @@ namespace Gwen.Controls
         /// </returns>
         public override bool SetBounds(int x, int y, int width, int height)
         {
-            Point minSize = MinimumSize;
+            Size minSize = MinimumSize;
             // Clamp Minimum Size
-            if (width < minSize.X) width = minSize.X;
-            if (height < minSize.Y) height = minSize.Y;
+            if (width < minSize.Width) width = minSize.Width;
+            if (height < minSize.Height) height = minSize.Height;
 
             // Clamp to parent's window
             ControlBase parent = Parent;

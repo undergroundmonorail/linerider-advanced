@@ -23,14 +23,15 @@ namespace Gwen.Controls
         /// </summary>
         /// <param name="label">Node label.</param>
         /// <returns>Newly created control</returns>
-        public Properties Add(string label)
+        public PropertyTable Add(string label)
         {
             TreeNode node = new PropertyTreeNode(this);
             node.Text = label;
             node.Dock = Pos.Top;
 
-            Properties props = new Properties(node);
-            props.Dock = Pos.Top;
+            PropertyTable props = new PropertyTable(node);
+            props.Dock = Pos.Fill;
+            props.AutoSizeToContents = true;
 
             return props;
         }

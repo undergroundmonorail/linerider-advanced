@@ -1,12 +1,17 @@
 ﻿using System;
-
+using System.Collections.Generic;
 namespace Gwen.Controls
 {
     /// <summary>
     /// Tree control.
     /// </summary>
-    public class TreeControl : TreeNode
+    public class TreeControl : ScrollControl
     {
+        /// <summary>
+        /// Invoked when a node's selected state has changed.
+        /// </summary>
+        public event GwenEventHandler<EventArgs> SelectionChanged;
+
         #region Properties
 
         /// <summary>
@@ -14,6 +19,23 @@ namespace Gwen.Controls
         /// </summary>
         public bool AllowMultiSelect { get { return m_MultiSelect; } set { m_MultiSelect = value; } }
 
+        public IEnumerable<TreeNode> SelectedChildren
+        {
+            get
+            {
+                List<TreeNode> Trees = new List<TreeNode>();
+
+                foreach (ControlBase child in Children)
+                {
+                    TreeNode node = child as TreeNode;
+                    if (node == null)
+                        continue;
+                    Trees.AddRange(node.SelectedChildren);
+                }
+
+                return Trees;
+            }
+        }
         #endregion Properties
 
         #region Constructors
@@ -25,33 +47,27 @@ namespace Gwen.Controls
         public TreeControl(ControlBase parent)
             : base(parent)
         {
-            m_TreeControl = this;
-
-            RemoveChild(m_ToggleButton, true);
-            m_ToggleButton = null;
-            RemoveChild(m_Title, true);
-            m_Title = null;
-            RemoveChild(m_InnerPanel, true);
-            m_InnerPanel = null;
-
             m_MultiSelect = false;
-
-            m_ScrollControl = new ScrollControl(this);
-            m_ScrollControl.Dock = Pos.Fill;
-            m_ScrollControl.EnableScroll(false, true);
-            m_ScrollControl.AutoHideBars = true;
-            m_ScrollControl.Margin = Margin.One;
-
-            m_InnerPanel = m_ScrollControl;
-
-            m_ScrollControl.SetInnerSize(1000, 1000); // todo: why such arbitrary numbers?
-
             Dock = Pos.None;
+            m_Panel.BoundsOutlineColor = System.Drawing.Color.Red;
+            m_Panel.AutoSizeToContents = true; 
         }
 
         #endregion Constructors
 
         #region Methods
+        /// <summary>
+        /// Adds a new child node.
+        /// </summary>
+        /// <param name="label">Node's label.</param>
+        /// <returns>Newly created control.</returns>
+        public TreeNode AddNode(string label)
+        {
+            TreeNode node = new TreeNode(this);
+            node.Text = label;
+
+            return node;
+        }
 
         /// <summary>
         /// Handler for node added event.
@@ -59,7 +75,14 @@ namespace Gwen.Controls
         /// <param name="node">Node added.</param>
         public virtual void OnNodeAdded(TreeNode node)
         {
-            node.LabelPressed += OnNodeSelected;
+        }
+        protected override void OnChildAdded(ControlBase child)
+        {
+            base.OnChildAdded(child);
+            if (child is TreeNode)
+            {
+                ((TreeNode)child).TreeControl = this;
+            }
         }
 
         /// <summary>
@@ -67,9 +90,34 @@ namespace Gwen.Controls
         /// </summary>
         public virtual void RemoveAll()
         {
-            m_ScrollControl.DeleteAll();
+            DeleteAll();
         }
-
+        /// <summary>
+        /// Opens the node and all child nodes.
+        /// </summary>
+        public void ExpandAll()
+        {
+            foreach (ControlBase child in Children)
+            {
+                TreeNode node = child as TreeNode;
+                if (node == null)
+                    continue;
+                node.ExpandAll();
+            }
+        }
+        /// <summary>
+        /// Clears the selection on the node and all child nodes.
+        /// </summary>
+        public void UnselectAll()
+        {
+            foreach (ControlBase child in Children)
+            {
+                TreeNode node = child as TreeNode;
+                if (node == null)
+                    continue;
+                node.UnselectAll();
+            }
+        }
         /// <summary>
         /// Handler invoked when control children's bounds change.
         /// </summary>
@@ -77,18 +125,16 @@ namespace Gwen.Controls
         /// <param name="child"></param>
         protected override void OnChildBoundsChanged(System.Drawing.Rectangle oldChildBounds, ControlBase child)
         {
-            if (m_ScrollControl != null)
-                m_ScrollControl.UpdateScrollBars();
+            UpdateScrollBars();
+            base.OnChildBoundsChanged(oldChildBounds, child);
         }
 
-        /// <summary>
-        /// Handler for node selected event.
-        /// </summary>
-        /// <param name="Control">Node selected.</param>
-        protected virtual void OnNodeSelected(ControlBase Control, EventArgs args)
-        {
-            if (!m_MultiSelect /*|| InputHandler.InputHandler.IsKeyDown(Key.Control)*/)
-                UnselectAll();
+        internal virtual void OnSelectionChanged(ControlBase sender, EventArgs args)
+		{
+            if (SelectionChanged != null)
+            {
+                SelectionChanged.Invoke(sender, EventArgs.Empty);
+            }
         }
 
         /// <summary>
@@ -105,7 +151,6 @@ namespace Gwen.Controls
 
         #region Fields
 
-        private readonly ScrollControl m_ScrollControl;
         private bool m_MultiSelect;
 
         #endregion Fields

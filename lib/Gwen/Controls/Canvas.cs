@@ -73,6 +73,7 @@ namespace Gwen.Controls
 
             m_DisposeQueue = new List<IDisposable>();
             m_ToolTip = new Label(this);
+            m_ToolTip.Name = "canvas_tooltip";
             m_ToolTip.TextColorOverride = Skin.Colors.TooltipText;
             m_ToolTip.Padding = new Padding(5, 3, 5, 3);
             m_ToolTip.IsHidden = true;
@@ -118,7 +119,7 @@ namespace Gwen.Controls
 
             render.Begin();
 
-            RecurseLayout(Skin);
+            Layout(false);
 
             render.ClipRegion = Bounds;
             render.RenderOffset = Point.Empty;
@@ -179,7 +180,7 @@ namespace Gwen.Controls
             ProcessDelayedDeletes();
 
             // Check has focus etc..
-            RecurseLayout(Skin);
+            Layout(false);
 
             // If we didn't have a next tab, cycle to the start.
             if (NextTab == null)

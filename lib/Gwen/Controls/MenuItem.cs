@@ -121,6 +121,7 @@ namespace Gwen.Controls
             IsChecked = false;
 
             m_Accelerator = new Label(this);
+            AutoSizeToContents = true;
         }
 
         /// <summary>
@@ -136,13 +137,13 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
             if (m_SubmenuArrow != null)
             {
-                m_SubmenuArrow.Position(Pos.Right | Pos.CenterV, 4, 0);
+                m_SubmenuArrow.AlignToEdge(Pos.Right | Pos.CenterV, 4, 0);
             }
-            base.Layout(skin);
+            base.PrepareLayout();
         }
 
         /// <summary>
@@ -212,16 +213,7 @@ namespace Gwen.Controls
             m_Menu.Close();
             m_Menu.CloseAll();
         }
-
-        public override void SizeToContents()
-        {
-            base.SizeToContents();
-            if (m_Accelerator != null)
-            {
-                m_Accelerator.SizeToContents();
-                Width = Width + m_Accelerator.Width;
-            }
-        }
+        //todo removed accellerator sizing code
 
         public MenuItem SetAction(GwenEventHandler<EventArgs> handler)
         {

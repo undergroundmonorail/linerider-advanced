@@ -16,7 +16,7 @@ namespace Gwen.Controls
         {
             SetBounds(0, 0, 200, 22);
             Dock = Pos.Top;
-            m_InnerPanel.Padding = new Padding(5, 0, 0, 0);
+            m_Panel.Padding = new Padding(5, 0, 0, 0);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
             //TODO: We don't want to do vertical sizing the same as Menu, do nothing for now
         }
@@ -70,7 +70,6 @@ namespace Gwen.Controls
             item.Dock = Pos.Left;
             item.TextPadding = new Padding(5, 0, 5, 0);
             item.Padding = new Padding(10, 0, 10, 0);
-            item.SizeToContents();
             item.IsOnStrip = true;
             item.HoverEnter += OnHoverItem;
         }

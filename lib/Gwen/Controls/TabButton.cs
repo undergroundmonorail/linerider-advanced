@@ -28,7 +28,7 @@ namespace Gwen.Controls
                 m_Control = value;
             }
         }
-
+        
         /// <summary>
         /// Interior of the tab.
         /// </summary>
@@ -54,6 +54,7 @@ namespace Gwen.Controls
             TextPadding = new Padding(5, 3, 3, 3);
             Padding = Padding.Two;
             KeyboardInputEnabled = true;
+            AutoSizeToContents = true;
         }
 
         public override void DragAndDrop_StartDragging(DragDrop.Package package, int x, int y)
@@ -78,7 +79,7 @@ namespace Gwen.Controls
         /// <param name="skin">Skin to use.</param>
         protected override void Render(Skin.SkinBase skin)
         {
-            skin.DrawTabButton(this, IsActive, m_Control.TabStrip.Dock);
+			skin.DrawTabButton(this, IsActive, m_Control.TabStrip.Dock);
         }
 
         /// <summary>

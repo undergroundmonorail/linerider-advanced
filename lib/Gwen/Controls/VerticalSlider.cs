@@ -33,10 +33,11 @@ namespace Gwen.Controls
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
             m_SliderBar.SetSize(Width, 15);
             UpdateBarFromValue();
+            base.PrepareLayout();
         }
 
         /// <summary>

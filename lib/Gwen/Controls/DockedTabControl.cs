@@ -28,15 +28,15 @@ namespace Gwen.Controls
             m_TitleBar.IsHidden = true;
         }
 
-        /// <summary>
-        /// Lays out the control's interior according to alignment, padding, dock etc.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+		/// <summary>
+		/// Function invoked before layout, after AutoSizeToContents if applicable
+		/// Is called regardless of needslayout.
+		/// </summary>
+		protected override void PrepareLayout()
         {
             TabStrip.IsHidden = (TabCount <= 1);
             UpdateTitleBar();
-            base.Layout(skin);
+            base.PrepareLayout();
         }
 
         private void UpdateTitleBar()
