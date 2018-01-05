@@ -58,12 +58,13 @@ namespace Gwen.Controls.Layout
         /// Lays out the control's interior according to alignment, padding, dock etc.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
-            LayoutVertical(skin);
+            LayoutVertical();
+            base.PrepareLayout();
         }
 
-        protected virtual void LayoutVertical(Skin.SkinBase skin)
+        protected virtual void LayoutVertical()
         {
             int w = Width;
             int h = Height;
@@ -74,7 +75,7 @@ namespace Gwen.Controls.Layout
                 if (m_Scale[0])
                     m_Panel[0].SetBounds(m.Left, m.Top, w - m.Left - m.Right, (h*0.5f) - m.Top - m.Bottom);
                 else
-                    m_Panel[0].Position(Pos.Center, 0, (int) (h*-0.25f));
+                    m_Panel[0].AlignToEdge(Pos.Center, 0, (int) (h*-0.25f));
             }
 
             if (m_Panel[1] != null)
@@ -83,7 +84,7 @@ namespace Gwen.Controls.Layout
                 if (m_Scale[1])
                     m_Panel[1].SetBounds(m.Left, m.Top + (h*0.5f), w - m.Left - m.Right, (h*0.5f) - m.Top - m.Bottom);
                 else
-                    m_Panel[1].Position(Pos.Center, 0, (int) (h*0.25f));
+                    m_Panel[1].AlignToEdge(Pos.Center, 0, (int) (h*0.25f));
             }
         }
 

@@ -287,12 +287,9 @@ namespace Gwen.Controls
             OnMoved(m_SliderBar, EventArgs.Empty);
         }
 
-        /// <summary>
-        /// Lays out the control's interior according to alignment, padding, dock etc.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected override void Layout(Skin.SkinBase skin)
+        protected override void PrepareLayout()
         {
+            base.PrepareLayout();
             m_SliderBar.SetSize(15, Height);
             UpdateBarFromValue();
         }

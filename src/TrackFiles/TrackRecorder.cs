@@ -86,7 +86,7 @@ namespace linerider.TrackFiles
             Recording = true;
             Recording1080p = is1080P;
             game.Canvas.SetSize(game.RenderSize.Width, game.RenderSize.Height);
-            game.Canvas.FindChildByName("buttons").Position(Pos.CenterH);
+            game.Canvas.FindChildByName("buttons").AlignToEdge(Pos.CenterH);
 
             if (frame > 400) //many frames, will likely lag the game. Update the window as a fallback.
             {
@@ -312,7 +312,7 @@ namespace linerider.TrackFiles
             Recording = false;
 
             game.Canvas.SetSize(game.RenderSize.Width, game.RenderSize.Height);
-            game.Canvas.FindChildByName("buttons").Position(Pos.CenterH);
+            game.Canvas.FindChildByName("buttons").AlignToEdge(Pos.CenterH);
             _screenshotbuffer = null;
         }
     }

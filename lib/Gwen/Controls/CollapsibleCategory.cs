@@ -111,8 +111,7 @@ namespace Gwen.Controls
             CategoryButton button = new CategoryButton(this);
             button.Text = name;
             button.Dock = Pos.Top;
-            button.SizeToContents();
-            button.SetSize(button.Width + 4, button.Height + 4);
+            button.AutoSizeToContents = true;
             button.Padding = new Padding(5, 2, 2, 2);
             button.Clicked += OnSelected;
 
@@ -148,7 +147,7 @@ namespace Gwen.Controls
         /// Function invoked after layout.
         /// </summary>
         /// <param name="skin">Skin to use.</param>
-        protected override void PostLayout(Skin.SkinBase skin)
+        protected override void PostLayout()
         {
             if (IsCollapsed)
             {
