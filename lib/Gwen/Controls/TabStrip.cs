@@ -34,6 +34,7 @@ namespace Gwen.Controls
             : base(parent)
         {
             m_AllowReorder = false;
+            AutoSizeToContents = true;
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Gwen.Controls
             ControlBase droppedOn = GetControlAt(LocalPos.X, LocalPos.Y);
             if (droppedOn != null)
             {
-               // Point dropPos = droppedOn.CanvasPosToLocal(new Point(x, y));
+                // Point dropPos = droppedOn.CanvasPosToLocal(new Point(x, y));
                 //DragAndDrop.SourceControl.BringNextToControl(droppedOn, dropPos.X > droppedOn.Width/2);
                 droppedOn.BringToFront();
             }
@@ -98,57 +99,56 @@ namespace Gwen.Controls
 
         protected override void PrepareLayout()
         {
-            Point largestTab = new Point(5, 5);
-
-            int num = 0;
             foreach (var child in Children)
             {
-                TabButton button = child as TabButton;
-                if (null == button) continue;
-
-                Margin m = new Margin();
-                int notFirst = num > 0 ? -1 : 0;
-
-                if (Dock == Pos.Top)
-                {
-                    m.Left = notFirst;
-                    button.Dock = Pos.Left;
-                }
-
-                if (Dock == Pos.Left)
-                {
-                    m.Top = notFirst;
-                    button.Dock = Pos.Top;
-                }
-
-                if (Dock == Pos.Right)
-                {
-                    m.Top = notFirst;
-                    button.Dock = Pos.Top;
-                }
-
-                if (Dock == Pos.Bottom)
-                {
-                    m.Left = notFirst;
-                    button.Dock = Pos.Left;
-                }
-
-                largestTab.X = Math.Max(largestTab.X, button.Width);
-                largestTab.Y = Math.Max(largestTab.Y, button.Height);
-
-                button.Margin = m;
-                num++;
+                SetupButton(child);
             }
-
-            if (Dock == Pos.Top || Dock == Pos.Bottom)
-                SetSize(Width, largestTab.Y);
-
-            if (Dock == Pos.Left || Dock == Pos.Right)
-                SetSize(largestTab.X, Height);
-
             base.PrepareLayout();
         }
+        protected override void OnChildAdded(ControlBase child)
+        {
+            if (child is TabButton)
+            {
+                SetupButton(child);
+            }
+            base.OnChildAdded(child);
+        }
+        private void SetupButton(ControlBase child)
+        {
+            if (Children.Count == 0 || !(child is TabButton))
+                return;//???
+            var first = child == Children[0];
+            if (Dock == Pos.Top)
+            {
+                child.Margin = new Margin(first ? 0 : -1, 0, 0, 0);
+                child.Dock = Pos.Left;
+            }
 
+            if (Dock == Pos.Left)
+            {
+                child.Margin = new Margin(0, first ? 0 : -1, 0, 0);
+                child.Dock = Pos.Top;
+            }
+
+            if (Dock == Pos.Right)
+            {
+                child.Margin = new Margin(0, first ? 0 : -1, 0, 0);
+                child.Dock = Pos.Top; ;
+            }
+
+            if (Dock == Pos.Bottom)
+            {
+                child.Margin = new Margin(first ? 0 : -1, 0, 0, 0);
+                child.Dock = Pos.Left;
+            }
+        }
+        protected override void OnBoundsChanged(Rectangle oldBounds)
+        {
+            if (oldBounds != Bounds)
+            {
+                InvalidateParent();
+            }
+        }
         public override void DragAndDrop_HoverEnter(Package p, int x, int y)
         {
             if (m_TabDragControl != null)
@@ -183,7 +183,7 @@ namespace Gwen.Controls
                 m_TabDragControl.BringToFront();
                 m_TabDragControl.SetPosition(droppedOn.X - 1, 0);
 
-                if (dropPos.X > droppedOn.Width/2)
+                if (dropPos.X > droppedOn.Width / 2)
                 {
                     m_TabDragControl.MoveBy(droppedOn.Width - 1, 0);
                 }

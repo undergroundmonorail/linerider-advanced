@@ -51,12 +51,6 @@ namespace Gwen.Controls
         public TabControl(ControlBase parent)
             : base(parent)
 		{
-			this.PrivateChildren.Remove(m_Panel);
-            m_Panel.Dispose();
-            m_Panel = null;
-            m_Panel = new TabControlInner(null);
-			m_Panel.Dock = Pos.Fill;
-
 			m_Scroll = new ScrollBarButton[2];
             m_ScrollOffset = 0;
 
@@ -74,12 +68,16 @@ namespace Gwen.Controls
             m_Scroll[1].Clicked += ScrollPressedRight;
             m_Scroll[1].SetSize(14, 16);
 
-			PrivateChildren.Add(m_Panel);
+            PrivateChildren.Add(m_TabStrip);
 			PrivateChildren.Add(m_Scroll[0]);
 			PrivateChildren.Add(m_Scroll[1]);
-            PrivateChildren.Add(m_TabStrip);
 
             IsTabable = false;
+        }
+        protected override void RenderPanel(Skin.SkinBase skin)
+        {
+            base.RenderPanel(skin);
+            skin.DrawTabControl(this);
         }
         /// <summary>
         /// Adds a new page/tab.
@@ -220,19 +218,7 @@ namespace Gwen.Controls
 
             m_ScrollOffset = Util.Clamp(m_ScrollOffset, 0, TabsSize.Width - Width + 32);
 
-#if false
-    //
-    // This isn't frame rate independent. 
-    // Could be better. Get rid of m_ScrollOffset and just use m_TabStrip.GetMargin().left ?
-    // Then get a margin animation type and do it properly! 
-    // TODO!
-    //
-        m_TabStrip.SetMargin( Margin( Gwen::Approach( m_TabStrip.GetMargin().left, m_iScrollOffset * -1, 2 ), 0, 0, 0 ) );
-        InvalidateParent();
-#else
             m_TabStrip.Margin = new Margin(m_ScrollOffset*-1, 0, 0, 0);
-#endif
-
             m_Scroll[0].SetPosition(Width - 30, 5);
             m_Scroll[1].SetPosition(m_Scroll[0].Right, 5);
         }

@@ -4,6 +4,7 @@ using Gwen.Controls.Layout;
 
 namespace Gwen.Controls
 {
+    /*
     /// <summary>
     /// List box row (selectable).
     /// </summary>
@@ -63,5 +64,5 @@ namespace Gwen.Controls
                 OnRowSelected();
             }
         }
-    }
+    }*/
 }

@@ -12,7 +12,7 @@ namespace Gwen.Controls
 {
     public class Container : ControlBase
     {
-        protected ControlBase m_Panel;
+        protected Panel m_Panel;
         public override ControlCollection Children
         {
             get
@@ -38,25 +38,46 @@ namespace Gwen.Controls
                 return Margin.Zero;
             }
         }
+        public override Padding Padding
+        {
+            get
+            {
+                return m_Panel.Padding;
+            }
+            set
+            {
+                m_Panel.Padding = value;
+            }
+        }
         internal Rectangle PanelBounds => m_Panel.Bounds;
         public Container(ControlBase parent) : base(parent)
         {
             m_Panel = new Panel(null);
             m_Panel.Dock = Pos.Fill;
-			PrivateChildren.Add(m_Panel);
+            PrivateChildren.Add(m_Panel);
             this.BoundsOutlineColor = Color.Cyan;
         }
+        public override void Invalidate()
+        {
+            base.Invalidate();
+            m_Panel?.Invalidate();
+        }
+        public override void Redraw()
+        {
+            base.Redraw();
+            m_Panel?.Redraw();
+        }
         public override void BringChildToFront(ControlBase control)
-		{
-			var privateidx = PrivateChildren.IndexOf(control);
-			if (privateidx != -1)
-			{
+        {
+            var privateidx = PrivateChildren.IndexOf(control);
+            if (privateidx != -1)
+            {
                 PrivateChildren.BringToFront(privateidx);
-			}
-			else
-			{
-				base.BringChildToFront(control);
-			}
+            }
+            else
+            {
+                base.BringChildToFront(control);
+            }
         }
         public override void SendChildToBack(ControlBase control)
         {
@@ -73,6 +94,9 @@ namespace Gwen.Controls
         public override void DeleteAllChildren()
         {
             m_Panel.DeleteAllChildren();
+        }
+        protected virtual void RenderPanel(Skin.SkinBase skin)
+        {
         }
         protected class Panel : ControlBase
         {
@@ -98,13 +122,20 @@ namespace Gwen.Controls
                 container.PrivateChildren.SendToBack(this);
             }
             public override void BringToFront()
-			{
+            {
                 var container = (Container)Parent;
-				container.PrivateChildren.BringToFront(this);
+                container.PrivateChildren.BringToFront(this);
             }
             protected override void ProcessLayout()
             {
                 base.ProcessLayout();
+            }
+            protected override void Render(Gwen.Skin.SkinBase skin)
+            {
+
+                var parent = Parent as Container;
+                if (parent != null)
+                    parent.RenderPanel(skin);
             }
         }
     }

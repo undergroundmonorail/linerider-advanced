@@ -7,6 +7,7 @@ using Gwen.Controls.Layout;
 
 namespace Gwen.Controls
 {
+    /*
     /// <summary>
     /// ListBox control.
     /// </summary>
@@ -422,5 +423,5 @@ namespace Gwen.Controls
                 }
             }
         }
-    }
+    }*/
 }

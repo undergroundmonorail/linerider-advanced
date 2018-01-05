@@ -160,8 +160,9 @@ namespace Gwen.Controls
             m_ScrollControl.EnableScroll(true, true);
             m_ScrollControl.AutoHideBars = true;
             m_ScrollControl.Margin = Margin.One;
-            m_InnerPanel = m_ScrollControl;
-            m_Text.Parent = m_InnerPanel;
+            //TODO COMPLETELY BROKEN TEXTBOX WITHOUT THESE TWO LINES
+            //m_InnerPanel = m_ScrollControl;
+            //  m_Text.Parent = m_InnerPanel;
             m_ScrollControl.InnerPanel.BoundsChanged += new GwenEventHandler<EventArgs>(ScrollChanged);
 
             m_TextLines.Add(String.Empty);
@@ -174,6 +175,7 @@ namespace Gwen.Controls
             AddAccelerator("Ctrl + X", OnCut);
             AddAccelerator("Ctrl + V", OnPaste);
             AddAccelerator("Ctrl + A", OnSelectAll);
+            throw new Exception("nope. i didnt program this.");
         }
 
         #endregion Constructors
@@ -270,8 +272,6 @@ namespace Gwen.Controls
             {
                 m_Text.String = Text;
             }
-            if (AutoSizeToContents)
-                SizeToContents();
 
             base.Invalidate();
             InvalidateParent();
@@ -433,6 +433,7 @@ namespace Gwen.Controls
         /// <param name="child"></param>
         protected override void OnChildBoundsChanged(System.Drawing.Rectangle oldChildBounds, ControlBase child)
         {
+            base.OnChildBoundsChanged(oldChildBounds, child);
             if (m_ScrollControl != null)
             {
                 m_ScrollControl.UpdateScrollBars();

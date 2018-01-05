@@ -50,7 +50,7 @@ namespace Gwen.Controls
             m_MultiSelect = false;
             Dock = Pos.None;
             m_Panel.BoundsOutlineColor = System.Drawing.Color.Red;
-            m_Panel.AutoSizeToContents = true; 
+            m_Panel.AutoSizeToContents = true;
         }
 
         #endregion Constructors
@@ -125,8 +125,8 @@ namespace Gwen.Controls
         /// <param name="child"></param>
         protected override void OnChildBoundsChanged(System.Drawing.Rectangle oldChildBounds, ControlBase child)
         {
-            UpdateScrollBars();
             base.OnChildBoundsChanged(oldChildBounds, child);
+            UpdateScrollBars();
         }
 
         internal virtual void OnSelectionChanged(ControlBase sender, EventArgs args)

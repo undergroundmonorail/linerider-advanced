@@ -293,66 +293,66 @@ namespace Gwen.Controls
         /// <summary>
         /// Calculates a child's new bounds according to its Dock property and applies AutoSizeToContents
         /// </summary>
-        /// <param name="child">The child control.</param>
+        /// <param name="control">The child control.</param>
         /// <param name="area">The area available to dock to.</param>
         /// <returns>New bounds of the control.</returns>
-        public static Rectangle CalculateBounds(ControlBase child, ref Rectangle area)
+        public static Rectangle CalculateBounds(ControlBase control, ref Rectangle area)
         {
-            if (child.IsHidden)
-                return child.Bounds;
-            Rectangle ret = child.Bounds;
-            if (child.AutoSizeToContents)
+            if (control.IsHidden)
+                return control.Bounds;
+            Rectangle ret = control.Bounds;
+            if (control.AutoSizeToContents)
             {
-                ret.Size = child.GetSizeToFitContents();
+                ret.Size = control.GetSizeToFitContents();
             }
-            if (child.Dock == Pos.None)
+            if (control.Dock == Pos.None)
             {
                 return ret;
             }
-            Margin cm = child.Margin;
-            if (child.Dock == Pos.Left)
+            Margin cm = control.Margin;
+            if (control.Dock == Pos.Left)
             {
                 ret = new Rectangle(area.X + cm.Left,
                                 area.Y + cm.Top,
                                 ret.Width,
                                 area.Height - cm.Top - cm.Bottom);
 
-                int width = cm.Left + cm.Right + child.Width;
+                int width = cm.Left + cm.Right + ret.Width;
                 area.X += width;
                 area.Width -= width;
             }
-            else if (child.Dock == Pos.Right)
+            else if (control.Dock == Pos.Right)
             {
-                ret = new Rectangle((area.X + area.Width) - child.Width - cm.Right,
+                ret = new Rectangle((area.X + area.Width) - ret.Width - cm.Right,
                                 area.Y + cm.Top,
                                 ret.Width,
                                 area.Height - cm.Top - cm.Bottom);
 
-                int width = cm.Left + cm.Right + child.Width;
+                int width = cm.Left + cm.Right + ret.Width;
                 area.Width -= width;
             }
-            else if (child.Dock == Pos.Top)
+            else if (control.Dock == Pos.Top)
             {
                 ret = new Rectangle(area.X + cm.Left,
                                 area.Y + cm.Top,
                                 area.Width - cm.Left - cm.Right,
                                 ret.Height);
 
-                int height = cm.Top + cm.Bottom + child.Height;
+                int height = cm.Top + cm.Bottom + ret.Height;
                 area.Y += height;
                 area.Height -= height;
             }
-            else if (child.Dock == Pos.Bottom)
+            else if (control.Dock == Pos.Bottom)
             {
                 ret = new Rectangle(area.X + cm.Left,
-                                (area.Y + area.Height) - child.Height - cm.Bottom,
+                                (area.Y + area.Height) - ret.Height - cm.Bottom,
                                 area.Width - cm.Left - cm.Right,
                                 ret.Height);
-                area.Height -= child.Height + cm.Bottom + cm.Top;
+                area.Height -= ret.Height + cm.Bottom + cm.Top;
             }
             else
             {
-                throw new Exception("Unhandled Dock Pos" + child.Dock);
+                throw new Exception("Unhandled Dock Pos" + control.Dock);
             }
             return ret;
         }

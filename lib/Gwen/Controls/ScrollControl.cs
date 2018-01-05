@@ -81,14 +81,14 @@ namespace Gwen.Controls
             m_HorizontalScrollBar.BarMoved += HBarMoved;
             m_CanScrollH = true;
 			m_HorizontalScrollBar.NudgeAmount = 30;
-			base.PrivateChildren.Add(m_HorizontalScrollBar);
-			base.PrivateChildren.Add(m_VerticalScrollBar);
+			PrivateChildren.Add(m_HorizontalScrollBar);
+			PrivateChildren.Add(m_VerticalScrollBar);
             m_Panel.Dock = Pos.None;
-            m_Panel.SetPosition(0, 0);
-            m_Panel.SendToBack();
-            m_Panel.MouseInputEnabled = false;
+            m_Panel.X = 0;
+            m_Panel.Y = 0;
+            SendChildToBack(m_Panel);
             m_Panel.AutoSizeToContents = true; 
-            m_AutoHideBars = false;
+            m_AutoHideBars = true;
         }
 
         protected bool HScrollRequired
@@ -164,6 +164,7 @@ namespace Gwen.Controls
         /// <param name="child"></param>
         protected override void OnChildBoundsChanged(System.Drawing.Rectangle oldChildBounds, ControlBase child)
         {
+            base.OnChildBoundsChanged(oldChildBounds, child);
             UpdateScrollBars();
         }
 
