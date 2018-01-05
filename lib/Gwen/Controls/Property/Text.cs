@@ -16,6 +16,7 @@ namespace Gwen.Controls.Property
         public Text(Gwen.Controls.ControlBase parent) : base(parent)
         {
             m_TextBox = new TextBox(this);
+            this.Height = m_TextBox.TextHeight;
             m_TextBox.Dock = Pos.Fill;
             m_TextBox.ShouldDrawBackground = false;
             m_TextBox.TextChanged += OnValueChanged;

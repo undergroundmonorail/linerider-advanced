@@ -16,6 +16,8 @@ namespace Gwen.Controls.Property
         public KeyProperty(Gwen.Controls.ControlBase parent) : base(parent)
         {
             keytxt = new Label(this);
+            keytxt.Margin = new Margin(4, 0, 0, 0);
+            keytxt.Alignment = Pos.CenterV | Pos.Left;
             keytxt.KeyboardInputEnabled = false;
             keytxt.MouseInputEnabled = false;
             keytxt.Dock = Pos.Fill;

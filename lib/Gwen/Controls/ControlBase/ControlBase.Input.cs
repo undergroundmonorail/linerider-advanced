@@ -602,35 +602,6 @@ namespace Gwen.Controls
             OnSelectAll(from, EventArgs.Empty);
         }
 
-        /// <summary>
-        /// Renders the focus overlay.
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected virtual void RenderFocus(Skin.SkinBase skin)
-        {
-            if (InputHandler.KeyboardFocus != this)
-                return;
-            if (!IsTabable)
-                return;
-
-            skin.DrawKeyboardHighlight(this, RenderBounds, 3);
-        }
-
-        /// <summary>
-        /// Renders under the actual control (shadows etc).
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected virtual void RenderUnder(Skin.SkinBase skin)
-        {
-        }
-
-        /// <summary>
-        /// Renders over the actual control (overlays).
-        /// </summary>
-        /// <param name="skin">Skin to use.</param>
-        protected virtual void RenderOver(Skin.SkinBase skin)
-        {
-        }
 
         /// <summary>
         /// Called during rendering.

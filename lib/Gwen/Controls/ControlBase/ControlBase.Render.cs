@@ -13,7 +13,13 @@ namespace Gwen.Controls
 {
 	public partial class ControlBase
 	{
-
+		internal Rectangle RenderBounds
+		{
+			get
+			{
+                return new Rectangle(0,0,Width,Height);
+			}
+		}
         /// <summary>
 		/// Renders the control using specified skin.
 		/// </summary>
@@ -171,6 +177,35 @@ namespace Gwen.Controls
 
 			render.RenderOffset = oldRenderOffset;
 		}
+		/// <summary>
+		/// Renders the focus overlay.
+		/// </summary>
+		/// <param name="skin">Skin to use.</param>
+		protected virtual void RenderFocus(Skin.SkinBase skin)
+		{
+			if (InputHandler.KeyboardFocus != this)
+				return;
+			if (!IsTabable)
+				return;
+
+			skin.DrawKeyboardHighlight(this, RenderBounds, 3);
+		}
+
+		/// <summary>
+		/// Renders under the actual control (shadows etc).
+		/// </summary>
+		/// <param name="skin">Skin to use.</param>
+		protected virtual void RenderUnder(Skin.SkinBase skin)
+		{
+		}
+
+		/// <summary>
+		/// Renders over the actual control (overlays).
+		/// </summary>
+		/// <param name="skin">Skin to use.</param>
+		protected virtual void RenderOver(Skin.SkinBase skin)
+		{
+		}
 
 		/// <summary>
 		/// Sets the control's skin.
@@ -217,16 +252,17 @@ namespace Gwen.Controls
 		/// <param name="recursive">Determines whether the operation should be carried recursively.</param>
 		protected virtual void InvalidateChildren(bool recursive = false)
 		{
-			foreach (ControlBase child in m_Children)
+			foreach (ControlBase child in Children)
 			{
 				child.Invalidate();
 				if (recursive)
 					child.InvalidateChildren(true);
 			}
 
-			if (m_InnerPanel != null)
+            //if we're a container:
+            if (m_Children != Children)
 			{
-				foreach (ControlBase child in m_InnerPanel.m_Children)
+				foreach (ControlBase child in m_Children)
 				{
 					child.Invalidate();
 					if (recursive)
