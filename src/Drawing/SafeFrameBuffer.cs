@@ -21,6 +21,7 @@
 
 using System;
 using OpenTK.Graphics.OpenGL;
+using linerider.Utils;
 
 namespace linerider.Drawing
 {
@@ -48,6 +49,7 @@ namespace linerider.Drawing
                 var major = int.Parse(version[0]);
                 var minor = int.Parse(version[1]);
                 _version = new Version(major, minor);
+                System.Diagnostics.Debug.WriteLine("Using OpenGL Version "+_version);
             }
             catch
             {

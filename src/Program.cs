@@ -28,38 +28,27 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+
 namespace linerider
 {
-    public static class EntryPoint
-    {
-        #region Methods
-
-        [STAThread]
-        public static void Main()
-        {
-            Program.Run();
-        }
-
-        #endregion Methods
-    }
-
     public static class Program
     {
-        #region Fields
+#if DEBUG
+        public static bool IsDebugged = false;
+        public static bool LogGL => false;
+#endif
         public static string BinariesFolder = "bin";
         public readonly static CultureInfo Culture = new CultureInfo("en-US");
-        public static string Version = "1.02";
+        public static string Version = "1.03";
+        public static string TestVersion = "";
         public static string NewVersion = null;
         public static readonly string WindowTitle = "Line Rider: Advanced " + Version;
         public static Random Random;
         private static bool _crashed;
-        private static GLWindow glGame;
+        private static MainWindow glGame;
         private static string _currdir;
         private static string _userdir;
 
-        #endregion Fields
-
-        #region Properties
         /// <summary>
         /// Gets the current directory. Ends in Path.DirectorySeperator
         /// </summary>
@@ -71,7 +60,7 @@ namespace linerider
                 {
                     _userdir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                     //mono doesnt do well with non windows ~/Documents.
-                    if (_userdir == Environment.GetFolderPath(Environment.SpecialFolder.Personal)) 
+                    if (_userdir == Environment.GetFolderPath(Environment.SpecialFolder.Personal))
                     {
                         string documents = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Documents");
                         //so, if we can find a Documents folder, we use that.
@@ -95,27 +84,52 @@ namespace linerider
                 return _currdir;
             }
         }
-        #endregion Properties
 
-        #region Methods
-
-        public static void Crash(Exception ex)
+        public static void Crash(Exception e, bool nothrow = false)
         {
             if (!_crashed)
             {
                 _crashed = true;
                 glGame.Track.BackupTrack();
             }
+            if (System.Windows.Forms.MessageBox.Show(
+                "Unhandled Exception: " +
+                e.Message +
+                Environment.NewLine +
+                e.StackTrace +
+                Environment.NewLine +
+                "Would you like to export the crash data to a log.txt?",
+                "Error!",
+                System.Windows.Forms.MessageBoxButtons.YesNo)
+                 == System.Windows.Forms.DialogResult.Yes)
+            {
+                if (!File.Exists(UserDirectory + "log.txt"))
+                    File.Create(UserDirectory + "log.txt").Dispose();
+
+                string append = WindowTitle + "\r\n" + e.ToString() + "\r\n";
+                string begin = File.ReadAllText(UserDirectory + "log.txt", System.Text.Encoding.ASCII);
+                File.WriteAllText(UserDirectory + "log.txt", begin + append, System.Text.Encoding.ASCII);
+            }
+            if (!nothrow)
+                throw e;
         }
 
         public static void NonFatalError(string err)
         {
             System.Windows.Forms.MessageBox.Show("Non Fatal Error: " + err);
         }
-
         public static void Run()
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+#if DEBUG
+            if (IsDebugged)
+            {
+                Debug.Listeners.Add(new TextWriterTraceListener(System.Console.Out));
+            }
+            else
+            {
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            }
+#endif
             if (!Directory.Exists(UserDirectory))
             {
                 Directory.CreateDirectory(UserDirectory);
@@ -133,16 +147,17 @@ namespace linerider
 
             using (Toolkit.Init(new ToolkitOptions { EnableHighResolution = true, Backend = PlatformBackend.Default }))
             {
-                using (glGame = new GLWindow())
+                using (glGame = new MainWindow())
                 {
+                    UI.InputUtils.SetWindow(glGame);
                     glGame.RenderSize = new System.Drawing.Size(1280, 720);
-                    Drawing.GameRenderer.Game = glGame;
+                    Rendering.GameRenderer.Game = glGame;
                     var ms = new MemoryStream(GameResources.icon);
                     glGame.Icon = new System.Drawing.Icon(ms);
 
                     ms.Dispose();
                     glGame.Title = WindowTitle;
-                    glGame.Run(60, 0);
+                    glGame.Run(60, 0);//todo maybe not limit this
                 }
                 Audio.AudioService.CloseDevice();
             }
@@ -150,20 +165,13 @@ namespace linerider
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Crash((Exception)e.ExceptionObject);
-            if (System.Windows.Forms.MessageBox.Show("Unhandled Exception: " + e.ExceptionObject + "\r\n\r\nWould you like to export the crash data to a log.txt?", "Error!", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                if (!File.Exists(UserDirectory + "log.txt"))
-                    File.Create(UserDirectory + "log.txt").Dispose();
-
-                string append = WindowTitle + "\r\n" + e.ExceptionObject.ToString() + "\r\n";
-                string begin = File.ReadAllText(UserDirectory + "log.txt", System.Text.Encoding.ASCII);
-                File.WriteAllText(UserDirectory + "log.txt", begin + append, System.Text.Encoding.ASCII);
-            }
 
             throw (Exception)e.ExceptionObject;
         }
         public static void UpdateCheck()
         {
+            if (TestVersion.Contains("closed"))
+                return;
             if (Settings.CheckForUpdates)
             {
                 new System.Threading.Thread(() =>
@@ -193,7 +201,5 @@ namespace linerider
                 }.Start();
             }
         }
-
-        #endregion Methods
     }
 }

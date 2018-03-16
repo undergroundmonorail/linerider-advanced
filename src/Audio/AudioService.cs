@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ using OpenTK.Input;
 using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
 using linerider.Audio;
+using linerider.Utils;
 
 namespace linerider.Audio
 {
@@ -36,17 +38,9 @@ namespace linerider.Audio
         private static string _currentsong = null;
         private static AudioDevice _device;
         private static AudioStreamer _musicplayer;
+        private static Stopwatch _audiosync_timer = Stopwatch.StartNew();
 
         private static Dictionary<string, AudioSource> _sfx;
-        public static float SongPosition
-        {
-            get
-            {
-                if (_musicplayer == null)
-                    return 0;
-                return (float)_musicplayer.SongPosition;
-            }
-        }
 
         public static void EnsureInitialized()
         {
@@ -108,12 +102,13 @@ namespace linerider.Audio
         public static bool LoadFile(ref string file)
         {
             EnsureInitialized();
-            if (_currentsong == file)
-                return false;
-
             if (_musicplayer != null)
             {
                 Stop();
+            }
+            if (_currentsong == file)
+            {
+                return true;
             }
             game.Title = Program.WindowTitle;
             file = GetOgg(file);
@@ -164,7 +159,7 @@ namespace linerider.Audio
         {
             bool hardexit = false;
             TimeSpan duration = TimeSpan.Zero;
-            file = ffmpeg.FFMPEG.ConvertSongToOgg(file, (string obj) =>
+            file = IO.ffmpeg.FFMPEG.ConvertSongToOgg(file, (string obj) =>
             {
                 var idx = obj.IndexOf("Duration: ", StringComparison.InvariantCulture);
                 if (idx != -1)
@@ -194,6 +189,54 @@ namespace linerider.Audio
             if (hardexit)
                 return null;
             return file;
+        }
+        public static void EnsureSync()
+        {
+            if (!Settings.Local.EnableSong)
+                return;
+            var updaterate = (float)game.Scheduler.UpdatesPerSecond;
+            var updatepercent = (float)game.Scheduler.ElapsedPercent;
+            var expectedtime = Settings.Local.CurrentSong.Offset +
+                (game.Track.CurrentFrame / (float)Constants.PhysicsRate) +
+                (updatepercent / (float)Constants.PhysicsRate);
+
+            bool shouldplay = 
+                _musicplayer != null &&
+                game.Track.Playing &&
+                expectedtime < _musicplayer.Duration;
+
+            if (shouldplay && !game.Canvas.Scrubber.Held)
+            {
+                float rate = (updaterate / Constants.PhysicsRate);
+                if (game.ReversePlayback)
+                    rate = -rate;
+                if (_musicplayer.Speed != rate || !_musicplayer.Playing)
+                {
+                    AudioService.Resume(
+                        expectedtime,
+                        rate);
+                }
+                else if (_musicplayer.Playing)
+                {
+                    var sp = _musicplayer.SongPosition;
+                    var syncrate = Math.Abs(expectedtime - sp);
+                    if (syncrate > 0.1)
+                    {
+                        AudioService.Resume(
+                            expectedtime,
+                            rate);
+                        _audiosync_timer.Restart();
+                        Debug.WriteLine(
+                            "Audio fell out of sync by "+
+                            syncrate+
+                            " seconds");
+                    }
+                }
+            }
+            else
+            {
+                AudioService.Pause();
+            }
         }
     }
 }

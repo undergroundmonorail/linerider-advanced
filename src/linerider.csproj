@@ -1,245 +1,297 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{AB45D1B5-B29D-4792-9CA8-C7C11E33A447}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>linerider</RootNamespace>
     <AssemblyName>linerider</AssemblyName>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
-    <ReleaseVersion>1.0</ReleaseVersion>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AllowedReferenceRelatedFileExtensions>
+      *.pdb;
+    </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\build</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>6</LangVersion>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>none</ErrorReport>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>..\build</OutputPath>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>6</LangVersion>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Audio\AudioStreamer.cs" />
-    <Compile Include="Audio\AudioSource.cs" />
-    <Compile Include="Drawing\Shader.cs" />
-    <Compile Include="ErrorLog.cs" />
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="GameCanvas.cs" />
+    <Compile Include="Editor.cs" />
+    <Compile Include="GameResources.cs" />
     <Compile Include="GameService.cs" />
-    <Compile Include="Lines\Scarf.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Game\CameraBoundingBox.cs" />
-    <Compile Include="Game\CameraLocation.cs" />
-    <Compile Include="Models.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Track.cs" />
-    <Compile Include="UndoManager.cs" />
+    <Compile Include="EntryPoint.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Audio\AudioDevice.cs" />
     <Compile Include="Audio\AudioService.cs" />
+    <Compile Include="Audio\AudioSource.cs" />
+    <Compile Include="Audio\AudioStreamer.cs" />
     <Compile Include="Audio\Song.cs" />
-    <Compile Include="Controls\GameCanvas.cs" />
-    <Compile Include="Controls\GLTrack.cs" />
-    <Compile Include="Controls\GLWindow.cs" />
-    <Compile Include="Drawing\GameDrawingMatrix.cs" />
-    <Compile Include="Drawing\GameRenderer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Drawing\DrawOptions.cs" />
+    <Compile Include="Drawing\GenericVertex.cs" />
+    <Compile Include="Drawing\GLBuffer.cs" />
+    <Compile Include="Drawing\GLArray.cs" />
+    <Compile Include="Drawing\LineVAO.cs" />
+    <Compile Include="Drawing\GenericVAO.cs" />
     <Compile Include="Drawing\GLEnableCap.cs" />
+    <Compile Include="Drawing\KnobState.cs" />
+    <Compile Include="Drawing\Models.cs" />
+    <Compile Include="Drawing\LineVertex.cs" />
+    <Compile Include="Drawing\MsaaFbo.cs" />
     <Compile Include="Drawing\SafeFrameBuffer.cs" />
-    <Compile Include="Drawing\SceneryRenderer.cs" />
-    <Compile Include="Drawing\SceneryVBO.cs" />
-    <Compile Include="Drawing\StaticRenderer.cs" />
-    <Compile Include="Drawing\TrackRenderer.cs" />
-    <Compile Include="Drawing\Turtle.cs" />
-    <Compile Include="Drawing\VAO.cs" />
-    <Compile Include="Drawing\VBO.cs" />
-    <Compile Include="Drawing\Vertex.cs" />
-    <Compile Include="ffmpeg\FFMPEG.cs" />
-    <Compile Include="ffmpeg\FFMPEGParameters.cs" />
-    <Compile Include="Game\Camera.cs" />
-    <Compile Include="Game\DoubleRect.cs" />
-    <Compile Include="Game\DynamicObject.cs" />
-    <Compile Include="Game\FastGrid.cs" />
-    <Compile Include="Game\FloatRect.cs" />
+    <Compile Include="Drawing\Shader.cs" />
+    <Compile Include="Drawing\Shaders.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Rendering\GameDrawingMatrix.cs" />
+    <Compile Include="Rendering\GameRenderer.cs" />
+    <Compile Include="Rendering\LineColorRenderer.cs" />
+    <Compile Include="Rendering\LineAccelRenderer.cs" />
+    <Compile Include="Rendering\WellRenderer.cs" />
+    <Compile Include="Rendering\LineRenderer.cs" />
+    <Compile Include="Rendering\LineDecorator.cs" />
+    <Compile Include="Rendering\RiderRenderer.cs" />
+    <Compile Include="Rendering\SimulationRenderer.cs" />
+    <Compile Include="Rendering\StaticRenderer.cs" />
+    <Compile Include="Rendering\TrackRenderer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Game\Lines\GameLine.cs" />
+    <Compile Include="Game\Lines\LineTrigger.cs" />
+    <Compile Include="Game\Lines\LineType.cs" />
+    <Compile Include="Game\Lines\RedLine.cs" />
+    <Compile Include="Game\Lines\SceneryLine.cs" />
+    <Compile Include="Game\Lines\StandardLine.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Game\Camera\ICamera.cs" />
+    <Compile Include="Game\Camera\SmoothCamera.cs" />
+    <Compile Include="Game\Camera\ClampCamera.cs" />
+    <Compile Include="Game\Camera\CameraBoundingBox.cs" />
+    <Compile Include="Game\Camera\CameraLocation.cs" />
+    </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Game\EditorGrid.cs" />
     <Compile Include="Game\FPSCounter.cs" />
-    <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\GameScheduler.cs" />
-    <Compile Include="Game\GridPoint.cs" />
-    <Compile Include="Game\Rider.cs" />
-    <Compile Include="Lines\BindLine.cs" />
-    <Compile Include="Lines\DynamicLine.cs" />
-    <Compile Include="Lines\Line.cs" />
-    <Compile Include="Lines\LineTrigger.cs" />
-    <Compile Include="Lines\LineType.cs" />
-    <Compile Include="Lines\RedLine.cs" />
-    <Compile Include="Lines\RepelLine.cs" />
-    <Compile Include="Lines\ScarfLine.cs" />
-    <Compile Include="Lines\SceneryLine.cs" />
-    <Compile Include="Lines\StandardLine.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\Angle.cs" />
-    <Compile Include="Tools\ColorControls.cs" />
+    <Compile Include="Game\HitTestManager.cs" />
+    <Compile Include="Game\RiderFrame.cs" />
+    <Compile Include="Game\Track.cs" />
+    <Compile Include="Game\Timeline.cs" />
+    <Compile Include="Game\Timeline.Engine.cs" />
+    <Compile Include="Game\TrackReader.cs" />
+    <Compile Include="Game\TrackWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Game\Physics\Bone.cs" />
+    <Compile Include="Game\Physics\CellLocation.cs" />
+    <Compile Include="Game\Physics\GridPoint.cs" />
+    <Compile Include="Game\Physics\ImmutablePointCollection.cs" />
+    <Compile Include="Game\Physics\SimulationGridOverlay.cs" />
+    <Compile Include="Game\Physics\RiderConstants.cs" />
+    <Compile Include="Game\Physics\Rider.cs" />
+    <Compile Include="Game\Physics\SimulationCell.cs" />
+    <Compile Include="Game\Physics\LineContainer.cs" />
+    <Compile Include="Game\Physics\SimulationGrid.cs" />
+    <Compile Include="Game\Physics\ISimulationGrid.cs" />
+    <Compile Include="Game\Physics\SimulationGridStatic.cs" />
+    <Compile Include="Game\Physics\SimulationPoint.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Tools\EraserTool.cs" />
     <Compile Include="Tools\HandTool.cs" />
-    <Compile Include="Tools\ImageButton.cs" />
-    <Compile Include="Tools\LineAdjustTool.cs" />
     <Compile Include="Tools\LineTool.cs" />
+    <Compile Include="Tools\MoveTool.cs" />
     <Compile Include="Tools\PencilTool.cs" />
-    <Compile Include="Tools\Sprite.cs" />
     <Compile Include="Tools\Tool.cs" />
-    <Compile Include="TrackFiles\Amf0.cs" />
-    <Compile Include="TrackFiles\Amf0Object.cs" />
-    <Compile Include="TrackFiles\BigEndianReader.cs" />
-    <Compile Include="TrackFiles\BigEndianWriter.cs" />
-    <Compile Include="TrackFiles\SOL.cs" />
-    <Compile Include="TrackFiles\TrackLoader.cs" />
-    <Compile Include="TrackFiles\TrackRecorder.cs" />
-    <Compile Include="Windows\ExportVideoWindow.cs" />
-    <Compile Include="Windows\LoadWindow.cs" />
-    <Compile Include="Windows\NumberProperty.cs" />
-    <Compile Include="Windows\PopupWindow.cs" />
-    <Compile Include="Windows\PreferencesWindow.cs" />
-    <Compile Include="Windows\SaveWindow.cs" />
-    <Compile Include="Windows\SongWindow.cs" />
-    <Compile Include="Windows\Window.cs" />
-    <Compile Include="Drawing\MsaaFbo.cs" />
-    <Compile Include="GameResources.cs" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
+    <Compile Include="IO\ffmpeg\FFMPEG.cs" />
+    <Compile Include="IO\ffmpeg\FFMPEGParameters.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\BigEndianReader.cs" />
+    <Compile Include="IO\BigEndianWriter.cs" />
+    <Compile Include="IO\SOL\Amf0.cs" />
+    <Compile Include="IO\SOL\Amf0Object.cs" />
+    <Compile Include="IO\SOL\sol_track.cs" />
+    <Compile Include="IO\SOL\SOLFile.cs" />
+    <Compile Include="IO\SOLLoader.cs" />
+    <Compile Include="IO\SOLWriter.cs" />
+    <Compile Include="IO\TrackIO.cs" />
+    <Compile Include="IO\TrackRecorder.cs" />
+    <Compile Include="IO\TrackSave.cs" />
+    <Compile Include="IO\TRKLoader.cs" />
+    <Compile Include="IO\TRKWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="UI\ColorControls.cs" />
+    <Compile Include="UI\CursorImpl.cs" />
+    <Compile Include="UI\ExportVideoWindow.cs" />
+    <Compile Include="UI\Hotkey.cs" />
+    <Compile Include="UI\ImageButton.cs" />
+    <Compile Include="UI\InputUtils.cs" />
+    <Compile Include="UI\InputState.cs" />
+    <Compile Include="UI\Keybinding.cs" />
+    <Compile Include="UI\LoadWindow.cs" />
+    <Compile Include="UI\NumberProperty.cs" />
+    <Compile Include="UI\PopupWindow.cs" />
+    <Compile Include="UI\PreferencesWindow.cs" />
+    <Compile Include="UI\SaveWindow.cs" />
+    <Compile Include="UI\SongWindow.cs" />
+    <Compile Include="UI\Sprite.cs" />
+    <Compile Include="UI\UndoManager.cs" />
+    <Compile Include="UI\Window.cs" />
+    <Compile Include="UI\SelectedLineWindow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Utils\Angle.cs" />
+    <Compile Include="Utils\AutoArray.cs" />
+    <Compile Include="Utils\DoubleRect.cs" />
+    <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\AsyncTask.cs" />
+    <Compile Include="Utils\FloatRect.cs" />
+    <Compile Include="Utils\ResourceSync.cs" />
+    <Compile Include="Utils\Line.cs" />
+    <Compile Include="Utils\Turtle.cs" />
+    <Compile Include="Utils\Utility.cs" />
+    <Compile Include="Utils\RectLRTB.cs" />
+    <Compile Include="Utils\ErrorLog.cs" />
+    <Compile Include="Utils\Settings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NVorbis, Version=0.8.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\NVorbis.0.8.5.0\lib\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="Gwen">
-      <HintPath>..\build\Gwen.dll</HintPath>
-    </Reference>
-    <Reference Include="Gwen.Renderer.OpenTK">
-      <HintPath>..\build\Gwen.Renderer.OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="NVorbis">
-      <HintPath>..\build\NVorbis.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK">
-      <HintPath>..\build\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="QuickFont">
-      <HintPath>..\build\QuickFont.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\beep.wav" />
-    <EmbeddedResource Include="Resources\bosh.svg" />
-    <EmbeddedResource Include="Resources\boshdead.svg" />
-    <EmbeddedResource Include="Resources\brokensled.svg" />
-    <EmbeddedResource Include="Resources\circletex.png" />
-    <EmbeddedResource Include="Resources\closed_move_icon.png" />
-    <EmbeddedResource Include="Resources\cursor_adjustline.png" />
-    <EmbeddedResource Include="Resources\cursor_default.png" />
     <EmbeddedResource Include="Resources\DefaultColors.xml" />
     <EmbeddedResource Include="Resources\DefaultSkin.png" />
-    <EmbeddedResource Include="Resources\eraser_cursor.png" />
-    <EmbeddedResource Include="Resources\eraser_icon.png" />
-    <EmbeddedResource Include="Resources\fast-forward.png" />
-    <EmbeddedResource Include="Resources\flag_icon.png" />
-    <EmbeddedResource Include="Resources\gwell_tool.png" />
     <EmbeddedResource Include="Resources\icon.ico" />
-    <EmbeddedResource Include="Resources\line_adjust_icon.png" />
-    <EmbeddedResource Include="Resources\line_cursor.png" />
-    <EmbeddedResource Include="Resources\line_icon.png" />
     <EmbeddedResource Include="Resources\loading.png" />
-    <EmbeddedResource Include="Resources\menu_icon.png" />
-    <EmbeddedResource Include="Resources\move_icon.png" />
-    <EmbeddedResource Include="Resources\pause.png" />
-    <EmbeddedResource Include="Resources\pencil_icon.png" />
-    <EmbeddedResource Include="Resources\play_icon.png" />
-    <EmbeddedResource Include="Resources\rewind.png" />
-    <EmbeddedResource Include="Resources\SourceSansPro_img.png" />
-    <EmbeddedResource Include="Resources\SourceSansProq.qfont" />
-    <EmbeddedResource Include="Resources\SourceSansPro-Regular.otf" />
-    <EmbeddedResource Include="Resources\stop_icon.png" />
-    <EmbeddedResource Include="Resources\White\eraser_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\fast-forward_white.png" />
-    <EmbeddedResource Include="Resources\White\flag_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\line_adjust_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\line_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\menu_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\move_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\pause_white.png" />
-    <EmbeddedResource Include="Resources\White\pencil_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\play_icon_white.png" />
-    <EmbeddedResource Include="Resources\White\rewind_white.png" />
-    <EmbeddedResource Include="Resources\White\stop_icon_white.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\sled.png" />
+    <EmbeddedResource Include="Resources\icons\erasertool.png" />
+    <EmbeddedResource Include="Resources\icons\fast-forward.png" />
+    <EmbeddedResource Include="Resources\icons\flag.png" />
+    <EmbeddedResource Include="Resources\icons\flag_invalid.png" />
+    <EmbeddedResource Include="Resources\icons\movetool.png" />
+    <EmbeddedResource Include="Resources\icons\linetool.png" />
+    <EmbeddedResource Include="Resources\icons\menu.png" />
+    <EmbeddedResource Include="Resources\icons\pantool.png" />
+    <EmbeddedResource Include="Resources\icons\pause.png" />
+    <EmbeddedResource Include="Resources\icons\penciltool.png" />
+    <EmbeddedResource Include="Resources\icons\play.png" />
+    <EmbeddedResource Include="Resources\icons\rewind.png" />
+    <EmbeddedResource Include="Resources\icons\stop.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\bosh.png" />
+    <EmbeddedResource Include="Resources\icons\white\erasertool.png" />
+    <EmbeddedResource Include="Resources\icons\white\fast-forward.png" />
+    <EmbeddedResource Include="Resources\icons\white\flag.png" />
+    <EmbeddedResource Include="Resources\icons\white\movetool.png" />
+    <EmbeddedResource Include="Resources\icons\white\linetool.png" />
+    <EmbeddedResource Include="Resources\icons\white\menu.png" />
+    <EmbeddedResource Include="Resources\icons\white\pantool.png" />
+    <EmbeddedResource Include="Resources\icons\white\pause.png" />
+    <EmbeddedResource Include="Resources\icons\white\penciltool.png" />
+    <EmbeddedResource Include="Resources\icons\white\play.png" />
+    <EmbeddedResource Include="Resources\icons\white\rewind.png" />
+    <EmbeddedResource Include="Resources\icons\white\stop.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\arm.png" />
+    <EmbeddedResource Include="Resources\cursors\closed_move.png" />
+    <EmbeddedResource Include="Resources\cursors\eraser.png" />
+    <EmbeddedResource Include="Resources\cursors\line.png" />
+    <EmbeddedResource Include="Resources\cursors\move.png" />
+    <EmbeddedResource Include="Resources\cursors\pencil.png" />
+    <EmbeddedResource Include="Resources\cursors\select.png" />
+    <EmbeddedResource Include="Resources\cursors\size_bdiag.png" />
+    <EmbeddedResource Include="Resources\cursors\size_fdiag.png" />
+    <EmbeddedResource Include="Resources\cursors\size_ver.png" />
+    <EmbeddedResource Include="Resources\cursors\size_hor.png" />
+    <EmbeddedResource Include="Resources\cursors\default.png" />
+    <EmbeddedResource Include="Resources\cursors\size_all.png" />
+    <EmbeddedResource Include="Resources\cursors\zoom.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\boshdead.png" />
+    <EmbeddedResource Include="Resources\rider\body.png" />
+    <EmbeddedResource Include="Resources\rider\bodydead.png" />
+    <EmbeddedResource Include="Resources\rider\sled.png" />
+    <EmbeddedResource Include="Resources\rider\brokensled.png" />
+    <EmbeddedResource Include="Resources\rider\arm.png" />
+    <EmbeddedResource Include="Resources\rider\leg.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\leg.png" />
+    <EmbeddedResource Include="Resources\gamefont_15_0.png" />
+    <EmbeddedResource Include="Resources\gamefont_15.fnt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\brokensled.png" />
+    <EmbeddedResource Include="Resources\shaders\simline.vert" />
+    <EmbeddedResource Include="Resources\shaders\simline.frag" />
+    <EmbeddedResource Include="Resources\shaders\rider.vert" />
+    <EmbeddedResource Include="Resources\shaders\rider.frag" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.manifest" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\OpenTK.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>OpenTK.dll.config</Link>
+    </None>
+    <None Include="openal32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\lib\Gwen\Gwen.csproj">
+      <Project>{ADDA2F43-96C0-497F-8216-29C67ABC9806}</Project>
+      <Name>Gwen</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\lib\Gwen.Renderer.OpenTK\Gwen.Renderer.OpenTK.csproj">
+      <Project>{41650c82-d630-4e5c-845a-f1513c8fdc99}</Project>
+      <Name>Gwen.Renderer.OpenTK</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Deployment.LinuxDeployData generateScript="False" />
-        <Policies>
-          <StandardHeader IncludeInNewFiles="True" Text=" &#xA; ${FileName}&#xA; &#xA; Author:&#xA;      ${AuthorName} &lt;${AuthorEmail}&gt;&#xA;&#xA; Copyright (c) ${Year} ${CopyrightHolder}&#xA;&#xA; This program is free software: you can redistribute it and/or modify&#xA; it under the terms of the GNU General Public License as published by&#xA; the Free Software Foundation, either version 3 of the License, or&#xA; (at your option) any later version.&#xA;&#xA; This program is distributed in the hope that it will be useful,&#xA; but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA; GNU General Public License for more details.&#xA;&#xA; You should have received a copy of the GNU General Public License&#xA; along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.">
-            <inheritsSet />
-            <inheritsScope />
-          </StandardHeader>
-        </Policies>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

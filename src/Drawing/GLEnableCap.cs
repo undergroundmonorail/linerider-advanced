@@ -21,7 +21,7 @@
 
 using System;
 using OpenTK.Graphics.OpenGL;
-namespace linerider
+namespace linerider.Drawing
 {
 	public class GLEnableCap : IDisposable
 	{

@@ -28,9 +28,9 @@ namespace linerider
 {
     public class GameService
     {
-        protected static GLWindow game;
+        protected static MainWindow game;
 
-        public static void Initialize(GLWindow wnd)
+        public static void Initialize(MainWindow wnd)
         {
             if (game == null)
                 game = wnd;

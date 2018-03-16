@@ -26,7 +26,7 @@ using System.Text;
 
 namespace linerider
 {
-    class FPSCounter
+    public class FPSCounter
     {
         private Queue<double> _queue = new Queue<double>();
         public double FPS
@@ -48,7 +48,9 @@ namespace linerider
         }
         public void Reset()
         {
+            var last = _queue.LastOrDefault();
             _queue.Clear();
+            _queue.Enqueue(last);
         }
         public void Reset(int fps)
         {

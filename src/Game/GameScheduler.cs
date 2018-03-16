@@ -21,6 +21,7 @@
 
 using System;
 using System.Diagnostics;
+using linerider.Utils;
 
 namespace linerider
 {
@@ -28,9 +29,15 @@ namespace linerider
     {
         private Stopwatch sw = new Stopwatch();
         private double lastupdate = 0;
-        private double updateperiod = 0;
+        private double updateperiod = 1;
         private bool reset = true;
-
+        public float UpdatePeriod
+        {
+            get
+            {
+                return (float)updateperiod;
+            }
+        }
         public int UpdatesPerSecond
         {
             get
@@ -56,6 +63,10 @@ namespace linerider
                 return (float)(elapsed / updateperiod);
             }
         }
+        public void DefaultSpeed()
+        {
+            UpdatesPerSecond = (int)Math.Round(Utils.Constants.PhysicsRate * Settings.Local.DefaultPlayback);
+        }
 
         public int UnqueueUpdates()
         {
@@ -77,9 +88,8 @@ namespace linerider
                 {
                     elapsed -= updateperiod;
                     updates++;
-                    int cap = 3;
-                    if (UpdatesPerSecond > 120)
-                        cap = 10;
+                    int cap = (int)(2 + 
+                    (UpdatesPerSecond / (float)Constants.PhysicsRate));
                     if (updates >= cap)
                     {
                         elapsed = Math.Min(elapsed, updateperiod * cap);

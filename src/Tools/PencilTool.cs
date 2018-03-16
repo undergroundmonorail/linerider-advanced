@@ -20,148 +20,163 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;
-using linerider.Drawing;
+using linerider.Rendering;
+using linerider.Game;
 
-namespace linerider
+namespace linerider.Tools
 {
-	
     public class PencilTool : Tool
     {
+        public override bool RequestsMousePrecision
+        {
+            get
+            {
+                return DrawingScenery;
+            }
+        }
+        public override bool NeedsRender
+        {
+            get
+            {
+                return DrawingScenery || Active;
+            }
+        }
+        public bool Snapped = false;
+        private bool _drawn;
         private Vector2d _start;
         private Vector2d _end;
-        private bool _started = false;
-        const float MINIMUM_LINE = 20f;
-        private StandardLine _last = null;
-        private bool inv = false;
+        const float MINIMUM_LINE = 0.6f;
+        private bool _addflip = false;
+        private Vector2d _mouseshadow;
+        private bool DrawingScenery
+        {
+            get
+            {
+                return game.Canvas.ColorControls.Selected == LineType.Scenery;
+            }
+        }
         public override MouseCursor Cursor
         {
             get { return game.Cursors["pencil"]; }
         }
-        public PencilTool()
-            : base()
+        public PencilTool() : base() { }
+        public override void OnMouseDown(Vector2d pos)
         {
-        }
-        public override void OnMouseDown (Vector2d pos)
-        {
-            _started = true;
-            _last = null;
+            Stop();
+            Active = true;
 
             if (game.EnableSnap)
             {
-                var gamepos = MouseCoordsToGame(pos);
-                var ssnap = Snap(gamepos);
-                var snap = ssnap as StandardLine;
-
-                if (snap != null)
+                var gamepos = ScreenToGameCoords(pos);
+                using (var trk = game.Track.CreateTrackReader())
                 {
-                    _start = (snap.CompliantPosition - gamepos).Length < (snap.CompliantPosition2 - gamepos).Length ? snap.CompliantPosition : snap.CompliantPosition2;
-                    _last = snap;
-                }
-                else if (ssnap != null)
-                {
-                    _start = (ssnap.Position - gamepos).Length < (ssnap.Position2 - gamepos).Length
-                        ? ssnap.Position
-                        : ssnap.Position2;
-                }
-                else
-                {
-                    _start = gamepos;
+                    var snap = TrySnapPoint(trk, gamepos, out bool snapped);
+                    if (snapped)
+                    {
+                        _start = snap;
+                        Snapped = true;
+                    }
+                    else
+                    {
+                        _start = gamepos;
+                        Snapped = false;
+                    }
                 }
             }
             else
             {
-                _start = MouseCoordsToGame(pos);
+                _start = ScreenToGameCoords(pos);
+                Snapped = false;
             }
-            var state = OpenTK.Input.Keyboard.GetState();
-            inv = state[OpenTK.Input.Key.ShiftLeft] || state[OpenTK.Input.Key.ShiftRight];
+            _addflip = UI.InputUtils.Check(UI.Hotkey.LineToolFlipLine);
             _end = _start;
             game.Invalidate();
+            game.Track.UndoManager.BeginAction();
             base.OnMouseDown(pos);
+        }
+        public override void OnChangingTool()
+        {
+            Stop();
+            _mouseshadow = Vector2d.Zero;
         }
         private void AddLine()
         {
-            Line added = null;
-            switch (game.Canvas.ColorControls.Selected)
+            _drawn = true;
+            using (var trk = game.Track.CreateTrackWriter())
             {
-                case LineType.Blue:
-                    added = new StandardLine(_start, _end, false) { inv = inv };
-                    added.CalculateConstants();
-                    break;
-
-                case LineType.Red:
-                    added = new RedLine(_start, _end, false) { inv = inv };
-                    (added as RedLine).Multiplier = game.Canvas.ColorControls.RedMultiplier;
-                    added.CalculateConstants();
-                    break;
-
-                case LineType.Scenery:
-                    added = new SceneryLine(_start, _end) { Width = game.Canvas.ColorControls.GreenMultiplier };
-                    break;
-            }
-            game.Track.AddLine(added);
-            if (added is StandardLine)
-            {
-                var stl = added as StandardLine;
-                game.Track.TryConnectLines(stl, _last);
-                _last = stl;
-            }
-            if (game.Canvas.ColorControls.Selected != LineType.Scenery)
-            {
-                game.Track.ChangeMade(_start, _end);
-                game.Track.TrackUpdated();
+                var added = CreateLine(trk, _start, _end, false, Snapped, false);
+                if (added is StandardLine)
+                {
+                    game.Track.NotifyTrackChanged();
+                }
             }
             game.Invalidate();
         }
-        public override void OnMouseMoved (Vector2d pos)
+        public override void OnMouseMoved(Vector2d pos)
         {
-            if (_started) {
-                _end = MouseCoordsToGame(pos);
+            if (Active)
+            {
+                _end = ScreenToGameCoords(pos);
                 var diff = _end - _start;
-                var x = diff.X;
-                var y = diff.Y;
-                if (Math.Abs(x) + Math.Abs(y) >= MINIMUM_LINE / game.Track.Zoom)
+                var len = diff.Length;
+
+                if ((DrawingScenery && len >= (MINIMUM_LINE / 2)) || len >= MINIMUM_LINE)
                 {
                     AddLine();
                     _start = _end;
+                    Snapped = true;//we are now connected to the newest line
                 }
                 game.Invalidate();
             }
-            base.OnMouseMoved (pos);
+
+            _mouseshadow = ScreenToGameCoords(pos);
+            base.OnMouseMoved(pos);
         }
-        public override void OnMouseUp (Vector2d pos)
+        public override void OnMouseUp(Vector2d pos)
         {
             game.Invalidate();
-            if (_started) {
-                _started = false;
+            if (Active)
+            {
+                _end = ScreenToGameCoords(pos);
                 var diff = _end - _start;
-                var x = diff.X;
-                var y = diff.Y;
-                if (Math.Abs(x) + Math.Abs(y) < MINIMUM_LINE / game.Track.Zoom && (_end != _start || game.Canvas.ColorControls.Selected != LineType.Scenery))
-                    return;
-                AddLine();
-                _last = null;
+                var len = diff.Length;
+
+                if (DrawingScenery || len >= MINIMUM_LINE)
+                {
+                    AddLine();
+                }
+                Stop();
             }
-            base.OnMouseUp (pos);
+            base.OnMouseUp(pos);
         }
-        public override void Render ()
+        public override void Render()
         {
             base.Render();
-            if (_started) {
-                var diff = _end - _start;
-                var x = diff.X;
-                var y = diff.Y;
-                if (Math.Abs(x) + Math.Abs(y) < MINIMUM_LINE / game.Track.Zoom)
-                {
-                    GameRenderer.RenderRoundedLine(_start, _end, Color.Red, 1);
-                }
+            if (DrawingScenery && _mouseshadow != Vector2d.Zero && !game.Track.Playing)
+            {
+                GameRenderer.RenderRoundedLine(_mouseshadow, _mouseshadow, Color.FromArgb(100, 0x00, 0xCC, 0x00), 2f * game.Canvas.ColorControls.GreenMultiplier, false, false);
             }
         }
         public override void Stop()
         {
-            _started = false;
+            if (Active)
+            {
+                Active = false;
+
+                if (_drawn)
+                {
+                    game.Track.UndoManager.EndAction();
+                }
+                else
+                {
+                    game.Track.UndoManager.CancelAction();
+                }
+                _drawn = false;
+            }
+            _mouseshadow = Vector2d.Zero;
         }
     }
 }

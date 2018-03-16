@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using QuickFont;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +12,14 @@ namespace Gwen.Renderer
 {
     public class OpenTK : RendererBase
     {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct Vertex
+        {
+            public short x, y;
+            public float u, v;
+            public byte r, g, b, a;
+        }
+
         #region Properties
 
         public int DrawCallCount { get { return m_DrawCallCount; } }
@@ -26,15 +33,29 @@ namespace Gwen.Renderer
             }
         }
 
-        /// <summary>
-        /// Returns number of cached strings in the text cache.
-        /// </summary>
-        public int TextCacheSize { get { return m_StringCache.Count; } }
-
         public int VertexCount { get { return m_VertNum; } }
 
         #endregion Properties
+        #region Fields
+        private const int MaxVerts = 1024;
+        static private int m_LastTextureID;
+        private readonly int m_VertexSize;
+        private readonly Vertex[] m_Vertices;
+        private bool m_ClipEnabled;
+        private Color m_Color;
 
+        // only used for text measurement
+        private int m_DrawCallCount;
+
+        private float m_PrevAlphaRef;
+        private int m_PrevBlendSrc, m_PrevBlendDst, m_PrevAlphaFunc;
+        private bool m_RestoreRenderState;
+        private StringFormat m_StringFormat;
+        private bool m_TextureEnabled;
+        private int m_VertNum;
+        private bool m_WasBlendEnabled, m_WasTexture2DEnabled, m_WasDepthTestEnabled;
+
+        #endregion Fields
         #region Constructors
 
         public OpenTK(bool restoreRenderState = true)
@@ -42,8 +63,6 @@ namespace Gwen.Renderer
         {
             m_Vertices = new Vertex[MaxVerts];
             m_VertexSize = Marshal.SizeOf(m_Vertices[0]);
-            m_StringCache = new Dictionary<Tuple<String, Font>, TextRenderer>();
-            m_Graphics = Graphics.FromImage(new Bitmap(1024, 1024, PixelFormat.Format32bppArgb));
             m_StringFormat = new StringFormat(StringFormat.GenericTypographic);
             m_StringFormat.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
             m_RestoreRenderState = restoreRenderState;
@@ -77,6 +96,7 @@ namespace Gwen.Renderer
             // Create the opengl texture
             GL.GenTextures(1, out glTex);
 
+            int prevtex = GL.GetInteger(GetPName.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, glTex);
             m_LastTextureID = glTex;
 
@@ -93,9 +113,9 @@ namespace Gwen.Renderer
             switch (lock_format)
             {
                 case PixelFormat.Format32bppArgb:
-					byte[] etc = new byte[100 * 4];
-					Marshal.Copy(data.Scan0, etc, 0, 400);
-					GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, t.Width, t.Height, 0, global::OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+                    byte[] etc = new byte[100 * 4];
+                    Marshal.Copy(data.Scan0, etc, 0, 400);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, t.Width, t.Height, 0, global::OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
                     break;
 
                 default:
@@ -104,6 +124,7 @@ namespace Gwen.Renderer
             }
 
             bmp.UnlockBits(data);
+            GL.BindTexture(TextureTarget.Texture2D, prevtex);
         }
 
         public override void Begin()
@@ -141,7 +162,6 @@ namespace Gwen.Renderer
 
         public override void Dispose()
         {
-            FlushTextCache();
             base.Dispose();
         }
 
@@ -270,40 +290,29 @@ namespace Gwen.Renderer
             m_VertNum = 0;
         }
 
-        /// <summary>
-        /// Clears the text rendering cache. Make sure to call this if cached strings size becomes too big (check TextCacheSize).
-        /// </summary>
-        public void FlushTextCache()
-        {
-            // todo: some auto-expiring cache? based on number of elements or age
-            foreach (var textRenderer in m_StringCache.Values)
-            {
-                textRenderer.Dispose();
-            }
-            m_StringCache.Clear();
-        }
 
         public override void FreeFont(Font font)
         {
-            Debug.Print(String.Format("FreeFont {0}", font.FaceName));
-            if (font.RendererData == null)
-                return;
             if (font is BitmapFont)
             {
-                var f = font.RendererData as QuickFont.QFont;
-                if (f == null)
-                    throw new InvalidOperationException("Freeing empty font");
-                f.Dispose();
-                font.RendererData = null;
-                return;
+                var tx = ((BitmapFont)font).texture;
+                if (tx == null)
+                    Debug.WriteLine("Freeing empty font " + font.FaceName);
+                else
+                    tx.Dispose();
             }
-            Debug.Print(String.Format("FreeFont {0} - actual free", font.FaceName));
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
-            if (sysFont == null)
-                throw new InvalidOperationException("Freeing empty font");
-
-            sysFont.Dispose();
-            font.RendererData = null;
+            else
+            {
+                if (font.RendererData == null)
+                    return;
+                Debug.WriteLine(String.Format("FreeFont {0} - system font", font.FaceName));
+                System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
+                if (sysFont == null)
+                    Debug.WriteLine("Freeing empty font");
+                else
+                    sysFont.Dispose();
+                font.RendererData = null;
+            }
         }
 
         public override void FreeTexture(Texture t)
@@ -324,16 +333,7 @@ namespace Gwen.Renderer
             {
                 return true;
             }
-            font.RealSize = font.Size * Scale;
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
-
-            if (sysFont != null)
-            {
-                sysFont.Dispose();
-            }
-            sysFont = new System.Drawing.Font(font.FaceName, font.Size);
-            font.RendererData = sysFont;
-            return true;
+            return false;
         }
 
         public override void LoadTexture(Texture t)
@@ -374,7 +374,7 @@ namespace Gwen.Renderer
 
             // Create the opengl texture
             GL.GenTextures(1, out glTex);
-
+            int prevtex = GL.GetInteger(GetPName.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, glTex);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMagFilter.Nearest);
@@ -391,12 +391,7 @@ namespace Gwen.Renderer
             bmp.UnlockBits(data);
             bmp.Dispose();
 
-            //[halfofastaple] Must rebind previous texture, to ensure creating a texture doesn't mess with the render flow.
-            // Setting m_LastTextureID isn't working, for some reason (even if you always rebind the texture,
-            // even if the previous one was the same), we are probably making draw calls where we shouldn't be?
-            // Eventually the bug needs to be fixed (color picker in a window causes graphical errors), but for now,
-            // this is fine.
-            GL.BindTexture(TextureTarget.Texture2D, m_LastTextureID);
+            GL.BindTexture(TextureTarget.Texture2D, prevtex);
         }
 
         public override void LoadTextureStream(Texture t, System.IO.Stream data)
@@ -421,35 +416,14 @@ namespace Gwen.Renderer
             //Debug.Print(String.Format("MeasureText '{0}'", text));
             if (font is BitmapFont)
             {
-                var data = (QFont)font.RendererData;
-                var ret = data.Measure(text);
-                ret.Height += 1;
+                var data = (BitmapFont)font;
+                var ret = data.fontdata.MeasureText(text);
                 return new Point((int)ret.Width, (int)ret.Height);
             }
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
-
-            if (sysFont == null || Math.Abs((font.RealSize - font.Size) * Scale) > 2)
+            else
             {
-                FreeFont(font);
-                LoadFont(font);
-                sysFont = font.RendererData as System.Drawing.Font;
+                throw new Exception("Unsupported font");
             }
-
-            var key = new Tuple<String, Font>(text, font);
-
-            if (m_StringCache.ContainsKey(key))
-            {
-                var tex = m_StringCache[key].Texture;
-                return new Point(tex.Width, tex.Height);
-            }
-
-            SizeF TabSize = m_Graphics.MeasureString("....", sysFont);
-            //Spaces are not being picked up, let's just use .'s.
-            m_StringFormat.SetTabStops(0f, new float[] { TabSize.Width });
-
-            SizeF size = m_Graphics.MeasureString(text, sysFont, Point.Empty, m_StringFormat);
-
-            return new Point((int)Math.Round(size.Width), (int)Math.Round(size.Height));
         }
 
         public override unsafe Color PixelColor(Texture texture, uint x, uint y, Color defaultColor)
@@ -490,86 +464,23 @@ namespace Gwen.Renderer
         {
             //Debug.Print(String.Format("RenderText {0}", font.FaceName));
 
-            // The DrawString(...) below will bind a new texture
-            // so make sure everything is rendered!
-            Flush();
             if (font is BitmapFont)
             {
-                var data = (QFont)font.RendererData;
-                GL.PushAttrib(AttribMask.TextureBit);
-                GL.PushAttrib(AttribMask.EnableBit);
-                GL.PushAttrib(AttribMask.ScissorBit);
+                var data = (BitmapFont)font;
                 {
-                    data.Options.Colour = DrawColor;
-                    position = Translate(position);
-                    if (m_ClipEnabled)
+                    var vertices = data.fontdata.GenerateText(position.X, position.Y, text);
+                    for (int i = 0; i < vertices.Count; i += 4)
                     {
-                        GL.Clear(ClearBufferMask.StencilBufferBit);
-                        GL.Enable(EnableCap.StencilTest);
-                        GL.ColorMask(false, false, false, false);
-                        GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
-                        GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
-                        GL.StencilMask(0xFF);
-                        GL.Clear(ClearBufferMask.StencilBufferBit);
-                        GL.Begin(PrimitiveType.Quads);
-                        {
-                            GL.Vertex2(ClipRegion.Left, ClipRegion.Top);
-                            GL.Vertex2(ClipRegion.Right, ClipRegion.Top);
-                            GL.Vertex2(ClipRegion.Right, ClipRegion.Bottom);
-                            GL.Vertex2(ClipRegion.Left, ClipRegion.Bottom);
-                        }
-                        GL.End();
-                        GL.ColorMask(true, true, true, true);
-                        GL.StencilMask(0);
-
-                        GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
-                    }
-
-					data.ResetVBOs();
-					data.PrintToVBO(text, new Vector3(position.X, position.Y,0),DrawColor,QFontAlignment.Left);
-					data.LoadVBOs();
-					data.DrawVBOs();
-					data.UnloadVBOs();
-                    if (m_ClipEnabled)
-                    {
-                        GL.Clear(ClearBufferMask.StencilBufferBit);
-                        GL.Disable(EnableCap.StencilTest);
+                        var tl = vertices[i];
+                        var br = vertices[i + 2];
+                        DrawTexturedRect(data.texture, Rectangle.FromLTRB(tl.x, tl.y, br.x, br.y), tl.u, tl.v, br.u, br.v);
                     }
                 }
-                GL.PopAttrib();
-                GL.PopAttrib();
-                GL.PopAttrib();
                 return;
-            }
-
-            System.Drawing.Font sysFont = font.RendererData as System.Drawing.Font;
-
-            if (sysFont == null || Math.Abs(font.RealSize - font.Size * Scale) > 2)
-            {
-                FreeFont(font);
-                LoadFont(font);
-                sysFont = font.RendererData as System.Drawing.Font;
-            }
-
-            var key = new Tuple<String, Font>(text, font);
-
-            if (!m_StringCache.ContainsKey(key))
-            {
-                // not cached - create text renderer
-                Debug.Print(String.Format("RenderText: caching \"{0}\", {1}", text, font.FaceName));
-
-                Point size = MeasureText(font, text);
-                TextRenderer tr = new TextRenderer(size.X, size.Y, this);
-                tr.DrawString(text, sysFont, Brushes.White, Point.Empty, m_StringFormat); // renders string on the texture
-
-                DrawTexturedRect(tr.Texture, new Rectangle(position.X, position.Y, tr.Texture.Width, tr.Texture.Height));
-
-                m_StringCache[key] = tr;
             }
             else
             {
-                TextRenderer tr = m_StringCache[key];
-                DrawTexturedRect(tr.Texture, new Rectangle(position.X, position.Y, tr.Texture.Width, tr.Texture.Height));
+                throw new Exception("Drawing unsupported font");
             }
         }
 
@@ -577,67 +488,6 @@ namespace Gwen.Renderer
         {
             m_ClipEnabled = true;
         }
-
-        #endregion Methods
-
-        #region Structs
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Vertex
-        {
-            public short x, y;
-            public float u, v;
-            public byte r, g, b, a;
-        }
-
-        #endregion Structs
-
-        #region Classes
-
-        public class BitmapFont : Font
-        {
-            #region Constructors
-
-            public BitmapFont(RendererBase renderer, string facename, int basesize, int realsize, byte[] qfontdata, List<Bitmap> png)
-                : base(renderer, facename, basesize)
-            {
-                RealSize = realsize;
-                Size = basesize;
-				var config = new QFontLoaderConfiguration();
-				var data = QFont.FromQFontAndBitmap(png, qfontdata,(float)realsize / (float)basesize,config);
-                data.Options.UseDefaultBlendFunction = false;
-                data.Options.WordSpacing = 0.45f;
-                RendererData = data;
-            }
-
-            #endregion Constructors
-        }
-
-        #endregion Classes
-
-        #region Fields
-
-        private const int MaxVerts = 1024;
-        static private int m_LastTextureID;
-        private readonly Graphics m_Graphics;
-        private readonly Dictionary<Tuple<String, Font>, TextRenderer> m_StringCache;
-        private readonly int m_VertexSize;
-        private readonly Vertex[] m_Vertices;
-        private bool m_ClipEnabled;
-        private Color m_Color;
-
-        // only used for text measurement
-        private int m_DrawCallCount;
-
-        private float m_PrevAlphaRef;
-        private int m_PrevBlendSrc, m_PrevBlendDst, m_PrevAlphaFunc;
-        private bool m_RestoreRenderState;
-        private StringFormat m_StringFormat;
-        private bool m_TextureEnabled;
-        private int m_VertNum;
-        private bool m_WasBlendEnabled, m_WasTexture2DEnabled, m_WasDepthTestEnabled;
-
-        #endregion Fields
 
         private void DrawRect(Rectangle rect, float u1 = 0, float v1 = 0, float u2 = 1, float v2 = 1)
         {
@@ -761,5 +611,6 @@ namespace Gwen.Renderer
 
             m_VertNum += 4;
         }
+        #endregion Methods
     }
 }

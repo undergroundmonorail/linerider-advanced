@@ -19,67 +19,67 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using linerider.Drawing;
+using linerider.Rendering;
 using OpenTK;
 using System;
 using Color = System.Drawing.Color;
 using OpenTK.Input;
+using linerider.Game;
 
-namespace linerider
+namespace linerider.Tools
 {
     public class LineTool : Tool
     {
-        #region Properties
-
         public override MouseCursor Cursor
         {
             get { return game.Cursors["line"]; }
         }
 
-        #endregion Properties
 
-        #region Constructors
+        public bool Snapped = false;
+        private const float MINIMUM_LINE = 0.01f;
+        private bool _addflip;
+        private Vector2d _end;
+        private Vector2d _start;
 
         public LineTool()
             : base()
         {
         }
 
-        #endregion Constructors
-
-        #region Methods
-
+        public override void OnChangingTool()
+        {
+            Stop();
+        }
         public override void OnMouseDown(Vector2d pos)
         {
-            _started = true;
-            var gamepos = MouseCoordsToGame(pos);
+            Active = true;
+            var gamepos = ScreenToGameCoords(pos);
             if (game.EnableSnap)
             {
-                var ssnap = Snap(gamepos);
-                var snap = ssnap as StandardLine;
-                if (snap != null)
+                using (var trk = game.Track.CreateTrackReader())
                 {
-                    _start = (snap.CompliantPosition - gamepos).Length < (snap.CompliantPosition2 - gamepos).Length ? snap.CompliantPosition : snap.CompliantPosition2;
-                    _last = snap;
-                }
-                else if (ssnap != null)
-                {
-                    _start = (ssnap.Position - gamepos).Length < (ssnap.Position2 - gamepos).Length
-                        ? ssnap.Position
-                        : ssnap.Position2;
-                }
-                else
-                {
-                    _start = gamepos;
+                    var snap = TrySnapPoint(trk, gamepos, out bool success);
+                    if (success)
+                    {
+                        _start = snap;
+                        Snapped = true;
+                    }
+                    else
+                    {
+                        _start = gamepos;
+                        Snapped = false;
+                    }
                 }
             }
             else
             {
                 _start = gamepos;
+                Snapped = false;
             }
 
-            var state = OpenTK.Input.Keyboard.GetState();
-            _addflip = state[OpenTK.Input.Key.LShift] || state[OpenTK.Input.Key.RShift];
+
+            _addflip = UI.InputUtils.Check(UI.Hotkey.LineToolFlipLine);
             _end = _start;
             game.Invalidate();
             base.OnMouseDown(pos);
@@ -87,12 +87,23 @@ namespace linerider
 
         public override void OnMouseMoved(Vector2d pos)
         {
-            if (_started)
+            if (Active)
             {
-                _end = MouseCoordsToGame(pos);
+                _end = ScreenToGameCoords(pos);
                 if (game.ShouldXySnap())
                 {
-                    _end = SnapXY(_start, _end);
+                    _end = Utility.SnapToDegrees(_start, _end);
+                }
+                else if (game.EnableSnap)
+                {
+                    using (var trk = game.Track.CreateTrackReader())
+                    {
+                        var snap = TrySnapPoint(trk, _end, out bool snapped);
+                        if (snapped && snap != _start)
+                        {
+                            _end = snap;
+                        }
+                    }
                 }
                 game.Invalidate();
             }
@@ -102,139 +113,92 @@ namespace linerider
         public override void OnMouseUp(Vector2d pos)
         {
             game.Invalidate();
-            if (_started)
+            if (Active)
             {
-                _started = false;
+                Active = false;
                 var diff = _end - _start;
                 var x = diff.X;
                 var y = diff.Y;
                 if (Math.Abs(x) + Math.Abs(y) < MINIMUM_LINE)
                     return;
-                StandardLine next = null;
                 if (game.ShouldXySnap())
                 {
-                    _end = SnapXY(_start, _end);
+                    _end = Utility.SnapToDegrees(_start, _end);
                 }
                 else if (game.EnableSnap)
                 {
-                    var ssnap = Snap(_end);
-                    var snap = ssnap as StandardLine;
-                    if (snap != null)
+                    using (var trk = game.Track.CreateTrackWriter())
                     {
-                        var old = _end;
-
-                        _end = (snap.CompliantPosition - _end).Length < (snap.CompliantPosition2 - _end).Length ? snap.CompliantPosition : snap.CompliantPosition2;
-                        if (_end == _start)
-                            _end = old;
-                        else
+                        var snap = TrySnapPoint(trk, _end, out bool snapped);
+                        if (snapped && snap != _start)
                         {
-                            next = snap;
+                            _end = snap;
                         }
-                    }
-                    else if (ssnap != null)
-                    {
-                        var old = _end;
-                        _end = (ssnap.Position - _end).Length < (ssnap.Position2 - _end).Length
-    ? ssnap.Position
-    : ssnap.Position2;
-                        if (_end == _start)
-                            _end = old;
                     }
                 }
                 if ((_end - _start).Length >= MINIMUM_LINE)
                 {
-                    Line added = null;
-                    switch (game.Canvas.ColorControls.Selected)
+                    using (var trk = game.Track.CreateTrackWriter())
                     {
-                        case LineType.Blue:
-                            added = new StandardLine(_start, _end, _addflip);
-                            break;
-
-                        case LineType.Red:
-                            added = new RedLine(_start, _end, _addflip);
-                            (added as RedLine).Multiplier = game.Canvas.ColorControls.RedMultiplier;
-                            break;
-
-                        case LineType.Scenery:
-                            added = new SceneryLine(_start, _end) { Width = game.Canvas.ColorControls.GreenMultiplier };
-                            break;
-                    }
-                    game.Track.AddLine(added);
-                    if (added is StandardLine)
-                    {
-                        var stl = added as StandardLine;
-                        game.Track.TryConnectLines(stl, _last);
-                        game.Track.TryConnectLines(stl, next);
-                    }
-                    if (game.Canvas.ColorControls.Selected != LineType.Scenery)
-                    {
-                        game.Track.TrackUpdated();
+                        game.Track.UndoManager.BeginAction();
+                        var added = CreateLine(trk, _start, _end, _addflip, Snapped, game.EnableSnap);
+                        game.Track.UndoManager.EndAction();
+                        if (added is StandardLine)
+                        {
+                            game.Track.NotifyTrackChanged();
+                        }
                     }
                     game.Invalidate();
                 }
             }
+            Snapped = false;
             base.OnMouseUp(pos);
         }
         public override void Render()
         {
             base.Render();
-            if (_started)
+            if (Active)
             {
                 var diff = _end - _start;
                 var x = diff.X;
                 var y = diff.Y;
-                Color c = Color.FromArgb(150, 150, 150);
+                Color c = Color.FromArgb(200, 150, 150, 150);
                 if (Math.Abs(x) + Math.Abs(y) < MINIMUM_LINE)
-                    c = Color.Red;
-                switch (game.Canvas.ColorControls.Selected)
                 {
-                    case LineType.Blue:
-                        StandardLine sl = new StandardLine(_start, _end, _addflip);
-                        sl.CalculateConstants();
-                        GameRenderer.DrawTrackLine(sl, c, game.SettingRenderGravityWells, true, false, false);
-                        break;
+                    c = Color.Red;
+                    var sz = 2f;
+                    if (game.Canvas.ColorControls.Selected == LineType.Scenery)
+                        sz *= game.Canvas.ColorControls.GreenMultiplier;
+                    GameRenderer.RenderRoundedLine(_start, _end, c, sz);
+                }
+                else
+                {
+                    switch (game.Canvas.ColorControls.Selected)
+                    {
+                        case LineType.Blue:
+                            StandardLine sl = new StandardLine(_start, _end, _addflip);
+                            sl.CalculateConstants();
+                            GameRenderer.DrawTrackLine(sl, c, Settings.Local.RenderGravityWells, true);
+                            break;
 
-                    case LineType.Red:
-                        RedLine rl = new RedLine(_start, _end, _addflip);
-                        rl.Multiplier = game.Canvas.ColorControls.RedMultiplier;
-                        rl.CalculateConstants();
-                        GameRenderer.DrawTrackLine(rl, c, game.SettingRenderGravityWells, true, false, false);
-                        break;
+                        case LineType.Red:
+                            RedLine rl = new RedLine(_start, _end, _addflip);
+                            rl.Multiplier = game.Canvas.ColorControls.RedMultiplier;
+                            rl.CalculateConstants();
+                            GameRenderer.DrawTrackLine(rl, c, Settings.Local.RenderGravityWells, true);
+                            break;
 
-                    case LineType.Scenery:
-                        GameRenderer.RenderRoundedLine(_start, _end, c, 1);
-                        break;
+                        case LineType.Scenery:
+                            GameRenderer.RenderRoundedLine(_start, _end, c, 2 * game.Canvas.ColorControls.GreenMultiplier);
+                            break;
+                    }
                 }
             }
-        }
-        public override bool OnKeyDown(Key k)
-        {
-            switch (k)
-            {
-                case Key.Left:
-                    return false;
-                case Key.Right:
-                    return false;
-            }
-            return base.OnKeyDown(k);
         }
 
         public override void Stop()
         {
-            _started = false;
+            Active = false;
         }
-
-        #endregion Methods
-
-        #region Fields
-
-        private const float MINIMUM_LINE = 0.01f;
-        private bool _addflip;
-        private Vector2d _end;
-        private StandardLine _last;
-        private Vector2d _start;
-        private bool _started = false;
-
-        #endregion Fields
     }
 }

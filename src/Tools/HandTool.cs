@@ -18,54 +18,94 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+using System;
 using OpenTK;
 using OpenTK.Input;
 
-namespace linerider
+namespace linerider.Tools
 {
     public class HandTool : Tool
     {
-        private Vector2d Start;
-        private bool started;
+        private Vector2d CameraStart;
+        private Vector2d CameraTarget;
         private Vector2d startposition;
-        public override MouseCursor Cursor => Mouse.GetState().IsButtonDown(MouseButton.Left)
-            ? game.Cursors["closed_hand"]
-            : game.Cursors["hand"];
+        private Vector2d lastposition;
+        private bool zoom = false;
+
+        public override MouseCursor Cursor
+        {
+            get
+            {
+                if (Active)
+                {
+                    return zoom ? game.Cursors["zoom"] : game.Cursors["closed_hand"];
+                }
+                return game.Cursors["hand"];
+            }
+        }
 
         public HandTool() : base()
         {
         }
 
+        public override void OnMouseRightDown(Vector2d pos)
+        {
+            zoom = true;
+            Active = true;
+            startposition = pos;
+            lastposition = startposition;
+            CameraStart = game.Track.Camera.GetCenter();
+            CameraTarget = ScreenToGameCoords(pos);
+            game.Invalidate();
+            game.UpdateCursor();
+            base.OnMouseRightDown(pos);
+        }
         public override void OnMouseDown(Vector2d pos)
         {
-            started = true;
-            startposition = pos / game.Track.Zoom;
-            Start = game.Track.Camera.Location.GetPosition();
+            zoom = false;
+            Active = true;
+            startposition = pos;
+            CameraStart = game.Track.Camera.GetCenter();
             game.Invalidate();
             base.OnMouseDown(pos);
         }
 
         public override void OnMouseMoved(Vector2d pos)
         {
-            if (started)
+            if (Active)
             {
-                game.Track.Camera.SetFrame(Start - ((pos / game.Track.Zoom) - startposition),false);
+                if (zoom)
+                {
+                    game.Zoom((float)(0.01 * (lastposition.Y - pos.Y)));
+                    lastposition = pos;
+                }
+                else
+                {
+                    var newcenter = 
+                        CameraStart - 
+                        ((pos / game.Track.Zoom) - 
+                        (startposition / game.Track.Zoom));
+                    game.Track.Camera.SetFrameCenter(newcenter);
+                }
                 game.Invalidate();
             }
             base.OnMouseMoved(pos);
         }
-
+        public override void OnMouseRightUp(Vector2d pos)
+        {
+            Active = false;
+            base.OnMouseRightUp(pos);
+        }
         public override void OnMouseUp(Vector2d pos)
         {
-            started = false;
+            Active = false;
             base.OnMouseUp(pos);
         }
 
         public override void Stop()
         {
+            Active = false;
             base.Stop();
-            started = false;
         }
     }
 }

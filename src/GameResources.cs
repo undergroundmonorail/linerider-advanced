@@ -88,7 +88,6 @@ namespace linerider
                 }
             }
         }
-
         internal static byte[] beep
         {
             get
@@ -96,39 +95,6 @@ namespace linerider
                 return GetBytes("beep.wav");
             }
         }
-
-        internal static System.Drawing.Bitmap circletex
-        {
-            get
-            {
-                return GetBitmap("circletex.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap closed_move_icon
-        {
-            get
-            {
-                return GetBitmap("closed_move_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap cursor_adjustline
-        {
-            get
-            {
-                return GetBitmap("cursor_adjustline.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap cursor_default
-        {
-            get
-            {
-                return GetBitmap("cursor_default.png");
-            }
-        }
-
         internal static System.Drawing.Bitmap DefaultSkin
         {
             get
@@ -136,271 +102,11 @@ namespace linerider
                 return GetBitmap("DefaultSkin.png");
             }
         }
-
-        internal static System.Drawing.Bitmap eraser_cursor
-        {
-            get
-            {
-                return GetBitmap("eraser_cursor.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap eraser_icon
-        {
-            get
-            {
-                return GetBitmap("eraser_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap eraser_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.eraser_icon_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap fast_forward
-        {
-            get
-            {
-                return GetBitmap("fast-forward.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap fast_forward_white
-        {
-            get
-            {
-                return GetBitmap("White.fast-forward_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap flag_icon
-        {
-            get
-            {
-                return GetBitmap("flag_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap flag_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.flag_icon_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap line_adjust_icon
-        {
-            get
-            {
-                return GetBitmap("line_adjust_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap line_adjust_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.line_adjust_icon_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap line_cursor
-        {
-            get
-            {
-                return GetBitmap("line_cursor.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap line_icon
-        {
-            get
-            {
-                return GetBitmap("line_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap line_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.line_icon_white.png");
-            }
-        }
-
         internal static System.Drawing.Bitmap loading
         {
             get
             {
                 return GetBitmap("loading.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap menu_icon
-        {
-            get
-            {
-                return GetBitmap("menu_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap menu_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.menu_icon_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap move_icon
-        {
-            get
-            {
-                return GetBitmap("move_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap move_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.move_icon_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap pause
-        {
-            get
-            {
-                return GetBitmap("pause.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap pause_white
-        {
-            get
-            {
-                return GetBitmap("White.pause_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap pencil_icon
-        {
-            get
-            {
-                return GetBitmap("pencil_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap pencil_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.pencil_icon_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap play_icon
-        {
-            get
-            {
-                return GetBitmap("play_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap play_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.play_icon_white.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap rewind
-        {
-            get
-            {
-                return GetBitmap("rewind.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap rewind_white
-        {
-            get
-            {
-                return GetBitmap("White.rewind_white.png");
-            }
-        }
-
-        internal static Bitmap sled_img
-        {
-            get
-            {
-                return GetBitmap("sled.png");
-            }
-        }
-        internal static Bitmap bosh_img
-        {
-            get
-            {
-                return GetBitmap("bosh.png");
-            }
-        }
-        internal static Bitmap boshdead_img
-        {
-            get
-            {
-                return GetBitmap("boshdead.png");
-            }
-        }
-        internal static Bitmap brokensled_img
-        {
-            get
-            {
-                return GetBitmap("brokensled.png");
-            }
-        }
-        internal static Bitmap arm_img
-        {
-            get
-            {
-                return GetBitmap("arm.png");
-            }
-        }
-        internal static Bitmap leg_img
-        {
-            get
-            {
-                return GetBitmap("leg.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap SourceSansPro_img
-        {
-            get
-            {
-                return GetBitmap("SourceSansPro_img.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap stop_icon
-        {
-            get
-            {
-                return GetBitmap("stop_icon.png");
-            }
-        }
-
-        internal static System.Drawing.Bitmap stop_icon_white
-        {
-            get
-            {
-                return GetBitmap("White.stop_icon_white.png");
             }
         }
 
@@ -411,15 +117,6 @@ namespace linerider
                 return GetBytes("icon.ico");
             }
         }
-
-        internal static byte[] SourceSansProq
-        {
-            get
-            {
-                return GetBytes("SourceSansProq.qfont");
-            }
-        }
-
         internal static string DefaultColors
         {
             get
@@ -427,5 +124,366 @@ namespace linerider
                 return GetString("DefaultColors.xml");
             }
         }
+        internal static string gamefont_15_fnt
+        {
+            get
+            {
+                return GetString("gamefont_15.fnt");
+            }
+        }
+        internal static System.Drawing.Bitmap gamefont_15_png
+        {
+            get
+            {
+                return GetBitmap("gamefont_15_0.png");
+            }
+        }
+        #region rider
+        internal static Bitmap sled_img
+        {
+            get
+            {
+                return GetBitmap("rider.sled.png");
+            }
+        }
+        internal static Bitmap brokensled_img
+        {
+            get
+            {
+                return GetBitmap("rider.brokensled.png");
+            }
+        }
+        internal static Bitmap arm_img
+        {
+            get
+            {
+                return GetBitmap("rider.arm.png");
+            }
+        }
+        internal static Bitmap leg_img
+        {
+            get
+            {
+                return GetBitmap("rider.leg.png");
+            }
+        }
+        internal static Bitmap body_img
+        {
+            get
+            {
+                return GetBitmap("rider.body.png");
+            }
+        }
+        internal static Bitmap bodydead_img
+        {
+            get
+            {
+                return GetBitmap("rider.bodydead.png");
+            }
+        }
+        #endregion
+        #region cursors
+        internal static System.Drawing.Bitmap cursor_move
+        {
+            get
+            {
+                return GetBitmap("cursors.move.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_dragging
+        {
+            get
+            {
+                return GetBitmap("cursors.closed_move.png");
+            }
+        }
+
+        internal static System.Drawing.Bitmap cursor_line
+        {
+            get
+            {
+                return GetBitmap("cursors.line.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_eraser
+        {
+            get
+            {
+                return GetBitmap("cursors.eraser.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_select
+        {
+            get
+            {
+                return GetBitmap("cursors.select.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_pencil
+        {
+            get
+            {
+                return GetBitmap("cursors.pencil.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_size_nesw
+        {
+            get
+            {
+                return GetBitmap("cursors.size_bdiag.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_size_nwse
+        {
+            get
+            {
+                return GetBitmap("cursors.size_fdiag.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_size_horz
+        {
+            get
+            {
+                return GetBitmap("cursors.size_hor.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_size_vert
+        {
+            get
+            {
+                return GetBitmap("cursors.size_ver.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_size_all
+        {
+            get
+            {
+                return GetBitmap("cursors.size_all.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_zoom_in
+        {
+            get
+            {
+                return GetBitmap("cursors.zoom.png");
+            }
+        }
+        internal static System.Drawing.Bitmap cursor_default
+        {
+            get
+            {
+                return GetBitmap("cursors.default.png");
+            }
+        }
+        #endregion
+        #region shaders
+        internal static string simline_frag
+        {
+            get
+            {
+                return GetString("shaders.simline.frag");
+            }
+        }
+        internal static string simline_vert
+        {
+            get
+            {
+                return GetString("shaders.simline.vert");
+            }
+        }
+        internal static string rider_frag
+        {
+            get
+            {
+                return GetString("shaders.rider.frag");
+            }
+        }
+        internal static string rider_vert
+        {
+            get
+            {
+                return GetString("shaders.rider.vert");
+            }
+        }
+        #endregion
+        #region Icons
+        #region white
+        internal static System.Drawing.Bitmap pencil_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.penciltool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap line_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.linetool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap eraser_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.erasertool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap movetool_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.movetool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap pantool_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.pantool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap menu_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.menu.png");
+            }
+        }
+        internal static System.Drawing.Bitmap fast_forward_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.fast-forward.png");
+            }
+        }
+        internal static System.Drawing.Bitmap flag_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.flag.png");
+            }
+        }
+        internal static System.Drawing.Bitmap pause_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.pause.png");
+            }
+        }
+        internal static System.Drawing.Bitmap play_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.play.png");
+            }
+        }
+        internal static System.Drawing.Bitmap rewind_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.rewind.png");
+            }
+        }
+        internal static System.Drawing.Bitmap stop_icon_white
+        {
+            get
+            {
+                return GetBitmap("icons.white.stop.png");
+            }
+        }
+        #endregion
+        internal static System.Drawing.Bitmap pencil_icon
+        {
+            get
+            {
+                return GetBitmap("icons.penciltool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap line_icon
+        {
+            get
+            {
+                return GetBitmap("icons.linetool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap eraser_icon
+        {
+            get
+            {
+                return GetBitmap("icons.erasertool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap movetool_icon
+        {
+            get
+            {
+                return GetBitmap("icons.movetool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap pantool_icon
+        {
+            get
+            {
+                return GetBitmap("icons.pantool.png");
+            }
+        }
+        internal static System.Drawing.Bitmap menu_icon
+        {
+            get
+            {
+                return GetBitmap("icons.menu.png");
+            }
+        }
+        internal static System.Drawing.Bitmap flag_icon
+        {
+            get
+            {
+                return GetBitmap("icons.flag.png");
+            }
+        }
+        internal static System.Drawing.Bitmap flag_invalid_icon
+        {
+            get
+            {
+                return GetBitmap("icons.flag_invalid.png");
+            }
+        }
+        internal static System.Drawing.Bitmap fast_forward
+        {
+            get
+            {
+                return GetBitmap("icons.fast-forward.png");
+            }
+        }
+        internal static System.Drawing.Bitmap rewind
+        {
+            get
+            {
+                return GetBitmap("icons.rewind.png");
+            }
+        }
+        internal static System.Drawing.Bitmap play_icon
+        {
+            get
+            {
+                return GetBitmap("icons.play.png");
+            }
+        }
+        internal static System.Drawing.Bitmap stop_icon
+        {
+            get
+            {
+                return GetBitmap("icons.stop.png");
+            }
+        }
+        internal static System.Drawing.Bitmap pause
+        {
+            get
+            {
+                return GetBitmap("icons.pause.png");
+            }
+        }
+        #endregion
     }
 }
